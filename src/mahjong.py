@@ -80,7 +80,7 @@ class Deck:
                 for _ in range(4):
                     tiles.append(Tile(color + str(number)))
 
-        for color in ['R', 'G', 'B', 'Y']:
+        for color in ['R', 'G', 'B']:
             for _ in range(4):
                 tiles.append(Tile(color + 'D'))
 
@@ -152,6 +152,13 @@ class Player:
                         if third == second + 1 and c.clr == b.clr:
                             runs.append([a, b, c])
         return runs
+
+    def hidden_tiles_with_color(self, clr):
+        result = []
+        for tile in self.hidden:
+            if tile.clr == clr:
+                result.append(tile)
+        return [t for t in self.hidden if t.clr == clr]
 
     def winning_hands(self):
         winning_hands = []
@@ -266,10 +273,10 @@ class Game:
         self.player_count += 1
 
     def start(self):
-        shuffle(self.players)
+        self.deal()
         for i, player in enumerate(self.players):
             player.index = i
-        self.deal()
+            print(player)
         while True:
             player = self.players[self.turn]
             tile = self.deck.draw()
@@ -284,39 +291,6 @@ class Game:
 
             self.prompt_discard(player, highlight=tile) 
 
-    def check_for_steals(self, tile):
-        turn = self.turn
-        for i in range(self.player_count - 1):
-            player = self.players[(turn + i + 1) % self.player_count]
-            stealportunities = player.stealportunities(tile) 
-            if len(stealportunities) > 1:
-                 if self.prompt_steal(player, tile, stealportunities):
-                    return True
-        return False
-    
-    def prompt_steal(self, player, tile, stealportunities):
-        prompt = f"Steal {tile}?    (0) Don't Steal | "
-        for i, group in enumerate(stealportunities):
-            prompt += f'({i + 1}) {string_list(group)} | '
-
-        while True:
-            # print(player.name)
-            print('~' * get_terminal_size().columns)
-            print("Your hand:", string_list(player.hand))
-            print(prompt)
-            choice = input("Choose a group to complete: ")
-            if choice.isdigit() and 0 <= int(choice) <= len(stealportunities):
-                break
-        
-        choice = int(choice)
-        if choice == 0: return False
-        player.deal(tile)
-        for tile in stealportunities[choice - 1]:
-            player.revealed.append(tile)
-            player.hidden.remove(tile)
-        self.prompt_discard(player)
-
-    
     def prompt_discard(self, player, highlight=None):
         print("Prompting", self.turn, player.index)
         self.turn = player.index
@@ -338,6 +312,37 @@ class Game:
         # print(player.name, player.index, self.player_count,  (player.index + 1) % self.player_count)
         self.turn = (player.index + 1) % self.player_count
 
+    def check_for_steals(self, tile):
+        turn = self.turn
+        for i in range(self.player_count - 1):
+            player = self.players[(turn + i + 1) % self.player_count]
+            stealportunities = player.stealportunities(tile) 
+            if len(stealportunities) > 0:
+                 if self.prompt_steal(player, tile, stealportunities):
+                    return True
+        return False
+    
+    def prompt_steal(self, player, tile, stealportunities):
+        prompt = f"Steal {tile}?    (0) Don't Steal | "
+        for i, group in enumerate(stealportunities):
+            prompt += f'({i + 1}) {string_list(group)} | '
+
+        while True:
+            print('~' * get_terminal_size().columns)
+            print("Your hand:", string_list(player.hand))
+            print(prompt)
+            choice = input("Choose a group to complete: ")
+            if choice.isdigit() and 0 <= int(choice) <= len(stealportunities):
+                break
+        
+        choice = int(choice)
+        if choice == 0: return False
+        player.deal(tile)
+        for tile in stealportunities[choice - 1]:
+            player.revealed.append(tile)
+            player.hidden.remove(tile)
+        self.prompt_discard(player)
+        return True
 
     def deal(self):
         self.deck.shuffle()
