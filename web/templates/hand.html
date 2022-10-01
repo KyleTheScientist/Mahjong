@@ -1,0 +1,16 @@
+{% block tiles %}
+<span id="hidden">
+    {% for tile in hand.hidden %}
+    <button class="tile">1</button>
+    {% endfor %}
+</span>
+<span id="revealed">
+    {% for group in hand.revealed %}
+    <span class="tile-group">
+        {% for tile in group %}
+        <button class="tile">9</button>
+        {% endfor %}
+    </span>
+    {% endfor %}
+</span>
+{% endblock %}
