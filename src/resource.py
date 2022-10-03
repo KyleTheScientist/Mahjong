@@ -1,4 +1,6 @@
 import os
+import inspect
+
 from colorama import Fore, Style, init
 
 init()
@@ -22,3 +24,11 @@ def color(string, color):
 def cprint(string, color):
     fore = getattr(Fore, color.upper())
     print(f'{fore}{string}{Style.RESET_ALL}')
+
+def log(message):
+    _class = inspect.stack()[1][0].f_locals["self"].__class__.__name__
+    if _class == 'Game':
+        clr = 'cyan'
+    else:
+        clr = 'green'
+    print(color(_class, clr), message)

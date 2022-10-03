@@ -13,7 +13,7 @@ body {
     color: white;
 }
 
-input[type="text"]
+#name
 {
     margin: 10px;
     font-size:70px;
@@ -22,7 +22,7 @@ input[type="text"]
     text-align: center!important;
 }
 
-#login-submit {
+#submit {
     margin: 10px;
     font-size:70px;
 }

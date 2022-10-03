@@ -1,16 +1,9 @@
-{% block tiles %}
-<span id="hidden">
-    {% for tile in hand.hidden %}
-    <button class="tile">1</button>
+{% block hand %}
+<div id="hand" class="section">
+    {% for tile in player.hand.hidden %}
+    <div class="tile-container">
+        <button class="tile" onclick="select(this)" suit="{{ tile.suit }}" selected="{{ tile.selected }}" id="{{ tile.id }}">{{ tile.symbol }}</button>
+    </div>
     {% endfor %}
-</span>
-<span id="revealed">
-    {% for group in hand.revealed %}
-    <span class="tile-group">
-        {% for tile in group %}
-        <button class="tile">9</button>
-        {% endfor %}
-    </span>
-    {% endfor %}
-</span>
+</div>
 {% endblock %}

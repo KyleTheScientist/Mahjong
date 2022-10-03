@@ -2,7 +2,11 @@ from time import sleep
 from gameplay.game import Game
 from resource import static, templates, color, cprint
 from traceback import format_exc
+from flask_socketio import SocketIO
+from form import LoginForm
+from functools import wraps
 from flask import (
+    copy_current_request_context,
     Flask,
     make_response,
     redirect,
@@ -11,49 +15,76 @@ from flask import (
     Response,
     url_for,
 )
+
 app = Flask(__name__, static_folder=static(), template_folder=templates())
-game = Game()
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app)
+
+game = Game(socketio)
 ###########################################################################
+
+def cookie(name):
+    return request.cookies.get(name)
+
+def validate(func):
+    @wraps(func)
+    def wrapper(*args, **kw):
+        gameID = cookie("gameID")
+        if gameID != game.id:
+            print("Invalid gameID, redirecting to login.")
+            return redirect('/login')
+        return func(*args, **kw)
+    return wrapper
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html')
+        return render_template('login.html', form=LoginForm())
     elif request.method == 'POST':
         try:
-            # TODO Verify no two players have the same name
-            player = game.add_player(request.form['name'])
+            name = request.form['name']
+            player = game.add_player(name)
             response = redirect(url_for('player_view'))
             response.set_cookie('gameID', game.id)
-            response.set_cookie('playerID', player.id)
+            response.set_cookie('playerID', player.id)  
             return response
         except Exception as e:
             cprint(format_exc(), "red")
 
-@app.route('/game/state')
-def game_state():
-    def eventStream():
-        with app.app_context():
-            player_id = cookie("playerID")
-            while True:
-                sleep(.1)
-                # if game.state_changed():
-                print('Yeilding players')
-                data = render_template('player-view.html', hand=game.player(player_id).hand)
-                yield f'data: {data}\n\n'
-    return Response(eventStream(), mimetype="text/event-stream")
+@socketio.on('register')
+@validate
+def register_socket(data):
+    player = game.player(cookie('playerID'))
+    player.sessionID = request.sid
+    print(f'Registered socketio connection with {player.name}')
+
+@socketio.on('discard_tile')
+@validate
+def discard_tile(id):
+    player = game.player(cookie('playerID'))
+    if game.player_can_discard(player):
+        game.discard(id, player)
+
+@socketio.on('steal_tile')
+@validate
+def steal_tile(group):
+    player = game.player(cookie('playerID'))
+    if game.player_can_steal(player):
+        game.steal(group, player)
+        game.end_steal(player)
 
 @app.route('/debug')
 def debug():
-    for _, player in game.players.items(): 
-        tile = game.deck.draw()
-        player.deal(tile)
+    game.deal()
+    game.start_turn()
     return "OK", 200
 
 @app.route('/game/player_view', methods=['GET'])
+@validate
 def player_view():
-    player_id = cookie("playerID")
-    return render_template('player-view.html', hand=game.player(player_id).hand)
+    with app.app_context():
+        player_id = cookie("playerID")
+        return render_template('player-view.html', game=game, player=game.player(player_id))
 
 @app.route('/')
 def index():
@@ -63,8 +94,5 @@ def index():
 def board():
     return '<h1>This is where the board will be</h1>'
 
-def cookie(name):
-    return request.cookies.get(name)
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    socketio.run(app, host='0.0.0.0')

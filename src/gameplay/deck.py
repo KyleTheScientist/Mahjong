@@ -5,11 +5,11 @@ from resource import color
 
 class Tile:
     color_map = {
-        'R': 'RED',
-        'G': 'GREEN',
-        'B': 'BLUE',
-        'Y': 'YELLOW',
-        'M': 'MAGENTA',
+        'R': 'red',
+        'G': 'green',
+        'B': 'blue',
+        'Y': 'yellow',
+        'M': 'magenta',
     }
 
     value = {
@@ -22,8 +22,8 @@ class Tile:
 
     def __init__(self, id) -> None:
         self.symbol = id[1]
-        self.clr = id[0]
-        self.color = Tile.color_map[self.clr]
+        self.color = id[0]
+        self.suit = Tile.color_map[self.color]
         if self.numeric():
             self.id = Tile.value[id[0]] * 10 + Tile.value[id[1]]
             self.number = int(id[1])
@@ -35,7 +35,7 @@ class Tile:
         return self.symbol.isdigit()
 
     def __str__(self):
-        return f'[ {color(self.symbol, self.color)} ]'
+        return f'[ {color(self.symbol, self.suit)} ]'
 
     def __lt__(self, other):
         return self.id < other.id
