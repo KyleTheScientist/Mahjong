@@ -3,9 +3,10 @@ div {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 100px;
+    font-size: 10vh;
     align-content: center;
     text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
@@ -16,13 +17,40 @@ body {
 #name
 {
     margin: 10px;
-    font-size:70px;
+    font-size:10vh;
     width: 100%;
-    height: 150px;
+    height: 12vh;
     text-align: center!important;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
 }
 
 #submit {
     margin: 10px;
-    font-size:70px;
+    font-size:8vh;
 }
+
+@media only screen and (orientation:portrait) {
+    #name
+    {
+        margin: 10px;
+        font-size:8vh;
+        height: 9vh;
+    }
+
+    div {
+        font-size: 6vh;
+    }
+
+    #submit {
+        font-size:5vh;
+    }
+    
+}
+
+@media only screen and (orientation:landscape) {
+    #orientation-warning {
+        display: none;
+    }
+}
+
