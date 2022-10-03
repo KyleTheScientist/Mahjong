@@ -16,26 +16,32 @@ body {
 .section {
     padding: 1vw 2vh;  
     flex: 1 auto;
+    border-top: 1vh solid black;
 }
 
 .tile {
     aspect-ratio: 5 / 6;
     min-height: 15vh;
     background-color: #f2ecd8;
-    border: 2px solid #dbd2b6;
-    border-left: 2px solid #f2ecd8;
-    border-top: 2px solid #f2ecd8;
+    border: .1vh solid #dbd2b694;
+    border-left: 2px solid #f2ecd881;
+    border-top: 2px solid #f2ecd881;
     border-radius: 5px;
     border-style: line;
     font-family: 'Reem Kufi Ink';
     font-weight: bold;
     font-size: 9vh;
-    text-shadow: 3px 3px 0px #e3dbc1;
-    box-shadow: 2px 2px #e3dbc1, 6px 6px #00000055;
+    text-shadow: 5px 5  px 0px #0000002c;
+    box-shadow: .5vh .5vh #c0b799, 6px 6px #00000055;
     margin: 0vh .25vw 2vh 0vh;
     text-align: center;
     align-content: center;
     padding: 0 0 0 0;
+}
+
+.revealed {
+    background-color: #b8b5ab;
+    box-shadow: .5vh .5vh #8a836f, 6px 6px #00000055;
 }
 
 .tile-group {
@@ -49,17 +55,19 @@ body {
     background-color: #34a34c;
 }
 
-#steal-options {
+#steal_options {
     background-color: #344ca3;
 }
 
-#revealed-groups {
-    background-color: #a3a3a3;
+#revealed_groups {
+    background-color: #243f2a;
 }
 
 .tile-container {
     margin: 0vh .25vw 2vh 0vh;
 }
+
+
 
 [selected="False"] {
     margin-top: 2vh;

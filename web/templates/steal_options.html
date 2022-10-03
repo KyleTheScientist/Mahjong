@@ -1,11 +1,15 @@
 {% block steal_options%}
-<div id="steal_options" class="section">
-    {% for group in player._steal_options %}
-        <div class="tile-group" index="{{ loop.index0 }}">
-            {% for tile in group %}
-            <button class="tile stealable" onclick="steal(this)" suit="{{ tile.suit }}">{{ tile.symbol }}</button>
-            {% endfor %}
-        </div>
-    {% endfor %}
-</div>
+{% if player._steal_options|count > 0  %}
+    <div id="steal_options" class="section">
+        {% for group in player._steal_options %}
+            <div class="tile-group" index="{{ loop.index0 }}">
+                {% for tile in group %}
+                <button class="tile stealable" onclick="steal(this)" suit="{{ tile.suit }}">{{ tile.symbol }}</button>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div id="steal_options" class="section" style="display: none"></div>
+{% endif %}
 {% endblock %}
