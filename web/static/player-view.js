@@ -1,5 +1,13 @@
 const socket = io();
 
+special_symbols = {
+    S: '<i class="material-icons">brightness_low</i>',
+    F: '<i class="material-icons">eco</i>',
+    W: '<i class="material-icons">ac_unit</i>',
+    P: '<i class="material-icons">local_florist</i>',
+}
+
+
 function main() {
     socket.on('connect', function () {
         socket.emit('register', {});
@@ -7,17 +15,17 @@ function main() {
 
     socket.on('state_changed', function state_changed(data) {
         document.getElementById(data.element).outerHTML = data.html;
-        console.log(data.element);
-        console.log(data.html);
+        document.getElementById("overlay").style.display = data.can_play ? 'none' : 'block';
+        makePretty();
         socket.emit('state_changed', { data: 'Success' });
     });
 }
 
 function select(self) {
     if (self.getAttribute('selected') == "False") {
-        const elements = document.querySelectorAll('.tile');
-        Array.from(elements).forEach((element, index) => {
-            element.setAttribute('selected', element == self ? 'True' : 'False');
+        const tiles = document.querySelectorAll('.tile');
+        Array.from(tiles).forEach((tile, index) => {
+            tile.setAttribute('selected', tile == self ? 'True' : 'False');
         });
     } else {
         console.log(`${self.getAttribute('suit')}-${self.textContent}`)
@@ -31,4 +39,19 @@ function steal(self) {
 }
 
 
-main();
+function makePretty() {
+    console.log("Making pretty!");
+    const tiles = document.querySelectorAll('.tile');
+    console.log(`${tiles.length} tiles`);
+
+    Array.from(tiles).forEach((tile, index) => {
+        for (const [key, value] of Object.entries(special_symbols)) {
+            if (tile.textContent == key) {
+                tile.innerHTML = value
+            }
+        }
+    });
+}
+
+$(document).ready(makePretty)
+main()

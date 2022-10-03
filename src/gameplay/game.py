@@ -36,6 +36,7 @@ class Game:
     def add_player(self, name):
         log(f"Adding player {len(self.players)}: {name}")
         player = Player(name, self.socketio)
+        player.is_party_leader = len(self.players) == 0
         self.players.append(player)
         return player
         
@@ -83,8 +84,11 @@ class Game:
             if len(steal_options) > 0:
                 self.set_state(Game.WAITING_FOR_STEAL)
                 thief.prompt_steal(tile, steal_options)
+                thief.set_can_play(True)
                 self.thieves.append(thief)
-        if self.state == Game.WAITING_FOR_DISCARD:
+        if self.state == Game.WAITING_FOR_STEAL:
+            player.set_can_play(False)
+        else:
             self.end_turn(player)
 
 
@@ -111,17 +115,18 @@ class Game:
         player = self.current_player()
         log(f"Starting {player.name}'s turn")
         player.deal(tile)
+        player.set_can_play(True)
         player.update()
         self.set_state(self.WAITING_FOR_DISCARD)
 
     def end_turn(self, player):
         log(f"Ending {player.name}'s turn")
         self.set_turn((self.indexof(player) + 1) % len(self.players))
+        player.set_can_play(False)
         self.start_turn()
     
     def end_steal(self, player):
         log(f"Ending {player.name}'s steal")
+        player.update()
         self.set_state(self.WAITING_FOR_DISCARD)
         self.set_turn(self.indexof(player))
-
-        

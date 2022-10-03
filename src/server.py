@@ -1,6 +1,6 @@
 from time import sleep
 from gameplay.game import Game
-from resource import static, templates, color, cprint
+from resource import static, templates, color, cprint, log
 from traceback import format_exc
 from flask_socketio import SocketIO
 from form import LoginForm
@@ -44,19 +44,38 @@ def login():
         try:
             name = request.form['name']
             player = game.add_player(name)
-            response = redirect(url_for('player_view'))
+            response = redirect(url_for('waiting_for_players'))
             response.set_cookie('gameID', game.id)
             response.set_cookie('playerID', player.id)  
+            socketio.emit('player_joined', {'html': f"Players: {len(game.players)}"}, broadcast=True)
             return response
         except Exception as e:
             cprint(format_exc(), "red")
+
+@app.route('/waiting-for-players', methods=['GET', 'POST'])
+@validate
+def waiting_for_players():
+    if request.method == 'GET':
+        player = game.player(cookie('playerID'))
+        return render_template('waiting-for-players.html', num_players=len(game.players), player=player)
 
 @socketio.on('register')
 @validate
 def register_socket(data):
     player = game.player(cookie('playerID'))
+    if not hasattr(player, 'sessionID'):
+        print(f'Registered socketio connection with {player.name}')
+    else:
+        print(f'Re-registered socketio connection with {player.name}')
     player.sessionID = request.sid
-    print(f'Registered socketio connection with {player.name}')
+    if game.state != game.WAITING_FOR_PLAYERS:
+        return
+    for p in game.players:
+        if not hasattr(p, 'sessionID'):
+            return
+    print(f'All players are registered.')
+    game.deal()
+    game.start_turn()
 
 @socketio.on('discard_tile')
 @validate
@@ -73,11 +92,15 @@ def steal_tile(group):
         game.steal(group, player)
         game.end_steal(player)
 
-@app.route('/debug')
-def debug():
-    game.deal()
-    game.start_turn()
-    return "OK", 200
+@socketio.on('request_start_game')
+@validate
+def start_game():
+    player = game.player(cookie('playerID'))
+    print(f"{player.name} requested to start the game.")
+    if player.is_party_leader:
+        socketio.emit('start_game', {}, broadcast=True)
+        return "OK", 200
+    return "Not party lead", 401
 
 @app.route('/game/player_view', methods=['GET'])
 @validate

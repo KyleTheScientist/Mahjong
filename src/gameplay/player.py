@@ -10,42 +10,58 @@ class Player:
         self.discards = []
         self.hand = Hand()
         self.socketio = socketio
+        self.can_play = False
 
     def deal(self, tile):
         for t in self.hand.hidden:
             t.selected = False
         self.hand.hidden.append(tile)
         tile.selected = True
+        self.drawn_tile = tile
         
     def update(self):
         self.hand.sort()
+        if not self.can_play:
+            self.drawn_tile = None
+            for tile in self.hand.hidden:
+                tile.selected = False
         for datatype in ['hand', 'steal_options', 'revealed_groups']:
-            data = {'html': render_template(f"{datatype}.html", player=self), 'element': datatype}
+            data = {
+                'html': render_template(f"{datatype}.html", player=self), 
+                'element': datatype,
+                'can_play': self.can_play,
+            }
             self.socketio.emit("state_changed", data, to=self.sessionID)
-        
+    
+    def set_can_play(self, can_play):
+        self.can_play = can_play
+        self.update()
+
     def steal_options(self, tile):
         return self.hand.steal_options(tile)
 
     def prompt_steal(self, tile, steal_options):
         log(f"{self.name} has an opportunity to steal {tile}")
-        self._steal_options = steal_options
         self._steal_tile = tile
+        self._steal_options = steal_options
         # tile.selected = True
         self.update()
 
     def steal(self, group):
         log(f"{self.name}: Stealing group {group}")
+        self.hand.hidden.append(self._steal_tile)
         tiles = self._steal_options[group]
         self.hand.reveal(tiles)
         self.update()
 
     def end_steal(self):
         self._steal_options = []
-        self._steal_tile = []
+        self._steal_tile = None
         self.update()
 
     def discard(self, id):
         discarded = None
+        self.drawn_tile = None
         for tile in self.hand.hidden:
             tile.selected = False
             if id == str(tile.id):
@@ -71,8 +87,7 @@ class Hand:
 
     def reveal(self, tiles):
         for tile in tiles:
-            if tile in self.hidden:
-                self.hidden.remove(tile)
+            self.hidden.remove(tile)
         self.revealed.append(tiles)
 
     def sort(self):

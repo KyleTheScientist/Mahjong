@@ -9,15 +9,18 @@ class Tile:
         'G': 'green',
         'B': 'blue',
         'Y': 'yellow',
+        'O': 'orange',
+        'C': 'cyan',
         'M': 'magenta',
+        'K': 'black',
     }
 
     value = {
         '1': 1, '2': 2, '3': 3,
         '4': 4, '5': 5, '6': 6,
         '7': 7, '8': 8, '9': 9,
-        'N': 1, 'E': 2, 'S': 3, 'W': 4, 'D': 5,
-        'R': 1, 'G': 2, 'B': 3, 'Y': 4, 'M': 5
+        'S': 1, 'F': 2, 'W': 3, 'P': 4, '★': 5,
+        'R': 1, 'G': 2, 'B': 3, 'Y': 4, 'O': 5, 'C': 6, 'M': 7, 'K': 8,
     }
 
     def __init__(self, id) -> None:
@@ -35,7 +38,8 @@ class Tile:
         return self.symbol.isdigit()
 
     def __str__(self):
-        return f'[ {color(self.symbol, self.suit)} ]'
+        clr = 'yellow' if self.suit == 'orange' else self.suit
+        return f'[ {color(self.symbol, clr)} ]'
 
     def __lt__(self, other):
         return self.id < other.id
@@ -67,11 +71,11 @@ class Deck:
 
         for color in ['R', 'G', 'B']:
             for _ in range(4):
-                tiles.append(Tile(color + 'D'))
+                tiles.append(Tile(color + '★'))
 
-        for direction in ['N', 'E', 'S', 'W']:
+        for season, color in [('S', 'K'), ('F', 'K'), ('W', 'K'), ('P', 'K')]:
             for _ in range(4):
-                tiles.append(Tile('M' + direction))
+                tiles.append(Tile(color + season))
 
         tiles.sort()
         self.tiles = tiles

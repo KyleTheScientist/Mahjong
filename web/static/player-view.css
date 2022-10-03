@@ -4,7 +4,8 @@ body {
     flex-direction: column;
     display: flex;
     background-color: #262626;
-}   
+    font-family: 'Reem Kufi Ink';
+}
 
 #container {
     display: flex;
@@ -14,6 +15,26 @@ body {
     background-color: #FF0000;
 }
 
+#overlay {
+    position: fixed;
+    /* Sit on top of the page content */
+    display: none;
+    /* Hidden by default */
+    width: 100%;
+    /* Full width (cover the whole page) */
+    height: 100%;
+    /* Full height (cover the whole page) */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Black background with opacity */
+    z-index: 2;
+    /* Specify a stack order in case you're using a different order for other elements */
+    cursor: pointer;
+    /* Add a pointer on hover */
+}
 
 #orientation-warning {
     display: none;
@@ -45,9 +66,25 @@ body {
 }
 
 .section {
-    padding: 1vw 2vh;
     flex: 1 auto;
-    border-top: 1vh solid black;
+}
+
+.section-content {
+    padding: 1vw 2vh;
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+
+.section-header {
+    color: white;
+    /* height: 100%; */
+    background-color: black;
+    margin: 0;
+}
+
+h1 {
+    margin: 0;
 }
 
 .tile {
@@ -59,15 +96,20 @@ body {
     border-top: 2px solid #f2ecd881;
     border-radius: 5px;
     border-style: line;
-    font-family: 'Reem Kufi Ink';
     font-weight: bold;
     font-size: 9vh;
-    text-shadow: 5px 5 px 0px #0000002c;
-    box-shadow: .5vh .5vh #c0b799, 6px 6px #00000055;
-    margin: 0vh .25vw 2vh 0vh;
+    text-shadow: 5px 5px 0px #0000002c;
+    box-shadow: .1vh .1vh #c0b799, .3vh .3vh #c0b799, .5vh .5vh #c0b799, .6vh .6vh #00000055;
+    margin: 0vh 1vw 2vh 0vh;
     text-align: center;
     align-content: center;
     padding: 0 0 0 0;
+}
+
+i.material-icons {
+    font-size: 9vh!important;
+    text-shadow: 5px 5px 0px #0000002c;
+    padding-top: 2.5vh;
 }
 
 .revealed {
@@ -76,13 +118,11 @@ body {
 }
 
 .tile-group {
-    margin: 0vh 4vh 0vh 0vh;
+    margin: 1vh 4vh 0vh 0vh;
+    background-color: #00000055;
 }
 
 #hand {
-    display: inline-flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
     background-color: #34a34c;
 }
 
@@ -95,23 +135,44 @@ body {
 }
 
 .tile-container {
-    margin: 0vh .25vw 2vh 0vh;
+    margin: 0vh 0vw 2vh 0vh;
 }
 
-
+[highlight] {
+    background-color: #eddca3;
+    /* border: .25vh solid black; */
+}
 
 [selected="False"] {
     margin-top: 2vh;
 }
 
 [suit="red"] {
-    color: #AA3300;
+    color: #AA3300!important;
 }
 
 [suit="green"] {
-    color: #33AA00;
+    color: #33AA00!important;
 }
 
 [suit="blue"] {
-    color: #3366AA;
+    color: #3366AA!important;
 }
+
+[suit="yellow"] {
+    color: #e5bc04 !important;
+}
+
+[suit="orange"] {
+    color: #e56504 !important;
+}
+
+[suit="cyan"] {
+    color: #32cee2 !important;
+}
+
+[suit="magenta"] {
+    color: #c44dd1 !important;
+}
+
+
