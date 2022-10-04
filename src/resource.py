@@ -32,3 +32,7 @@ def log(message):
     else:
         clr = 'green'
     print(color(_class, clr), message)
+
+def string_list(tiles):
+    return ''.join([str(t) for t in tiles])
+

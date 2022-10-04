@@ -17,7 +17,16 @@ function main() {
         document.getElementById(data.element).outerHTML = data.html;
         document.getElementById("overlay").style.display = data.can_play ? 'none' : 'block';
         makePretty();
-        socket.emit('state_changed', { data: 'Success' });
+    });
+
+    socket.on('prompt_win', function state_changed(data) {
+        document.getElementById("overlay").innerHTML = data.html;
+        makePretty();
+    });
+
+    socket.on('game_won', function state_changed(data) {
+        document.getElementById("overlay").innerHTML = data.html;
+        makePretty();
     });
 }
 
@@ -30,6 +39,14 @@ function select(self) {
     } else {
         console.log(`${self.getAttribute('suit')}-${self.textContent}`)
         socket.emit('discard_tile', self.getAttribute('id'))
+    }
+}
+
+function win(decision) {
+    if (decision == 'accept') {
+        socket.emit('accept_win')
+    } else {
+        document.getElementById("overlay").setAttribute('display', 'none')
     }
 }
 

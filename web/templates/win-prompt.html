@@ -1,0 +1,20 @@
+{% block victory %}
+    <div id="winning_hand">
+        <div class="section-header">
+            <h1>You have a winning hand!</h1>
+        </div>
+        <div class="section-content">
+            {% for group in winning_hand %}
+            <div class="tile-group" index="{{ loop.index0 }}">
+                {% for tile in group %}
+                <button class="tile" highlight suit="{{ tile.suit }}">{{ tile.symbol }}</button>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        <div class="prompt-options">
+            <button onclick="win('accept')">Kahjong</button>
+            <button onclick="win('decline')">Decline</button>
+        </div>
+    </div>
+{% endblock %}

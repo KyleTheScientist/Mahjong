@@ -1,3 +1,4 @@
+from flask import render_template
 from gameplay.player import Player
 from gameplay.deck import Deck
 from resource import log
@@ -20,6 +21,7 @@ class Game:
     DRAWING = 2
     WAITING_FOR_DISCARD = 3
     WAITING_FOR_STEAL = 4
+    GAME_WON = 5
 
     HAND_SIZE = 14
 
@@ -58,6 +60,7 @@ class Game:
             2: 'DRAWING',
             3: 'WAITING_FOR_DISCARD',
             4: 'WAITING_FOR_STEAL',
+            5: 'GAME_WON',
         }
         log(f"Set state to {states[state]}")
 
@@ -72,7 +75,6 @@ class Game:
 
     def discard(self, id, player):
         tile = player.discard(id)
-        log(f"{player.name} is discarding {tile}")
         player.update()
         self.discard_pile.append(tile)
         self.thieves = []
@@ -118,6 +120,10 @@ class Game:
         player.set_can_play(True)
         player.update()
         self.set_state(self.WAITING_FOR_DISCARD)
+        if player.has_win():
+            self.winner = player
+            player.prompt_win()
+            return
 
     def end_turn(self, player):
         log(f"Ending {player.name}'s turn")
@@ -130,3 +136,13 @@ class Game:
         player.update()
         self.set_state(self.WAITING_FOR_DISCARD)
         self.set_turn(self.indexof(player))
+        if player.has_win():
+            player.prompt_win()
+            self.winner = player
+            return
+
+    def game_won(self):
+        self.set_state(Game.GAME_WON)
+        self.socketio.emit('game_won', { 
+            'html': render_template('victory.html', player=self.winner, winning_hand=self.winner.winning_hands[0]),
+        })
