@@ -102,12 +102,16 @@ def start_game():
         return "OK", 200
     return "Not party lead", 401
 
-@socketio.on('accept_win')
+@socketio.on('win_response')
 @validate
-def accept_win():
+def accept_win(data):
     player = game.player(cookie('playerID'))
-    print(f"{player.name} accepted their win.")
-    game.game_won()
+    if data == "True":
+        print(f"{player.name} accepted their win.")
+        game.game_won()
+    else: 
+        print(f"{player.name} did not accept their win.")
+        player.set_can_play(True)
 
 @app.route('/game/player_view', methods=['GET'])
 @validate

@@ -27,12 +27,15 @@ def cprint(string, color):
 
 def log(message):
     _class = inspect.stack()[1][0].f_locals["self"].__class__.__name__
-    if _class == 'Game':
-        clr = 'cyan'
-    else:
-        clr = 'green'
-    print(color(_class, clr), message)
+    clr = {
+        'Game': 'magenta',
+        'Player': 'cyan',
+        'Hand': 'green',
+    }[_class]
+    print(color(_class, clr), '|', message)
 
-def string_list(tiles):
+def string_list(tiles, nested=False):
+    if nested:
+        return '  '.join([string_list(t) for t in tiles])
     return ''.join([str(t) for t in tiles])
 

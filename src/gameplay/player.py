@@ -1,12 +1,18 @@
+from time import time
 from uuid import uuid4
 from flask import render_template
 from flask_socketio import call
 from resource import log, string_list, color
 from gameplay.deck import Tile
 
+def _no_overlap(*sets):
+    # sets = [set(g) for g in groups]
+    return len(frozenset.intersection(*sets)) == 0
+
 def no_overlap(*lists):
     total_length = 0
     s = set()
+
     for i in lists:
         s = s.union([t.uuid for t in i])
         total_length += len(i)
@@ -19,7 +25,7 @@ class Player:
         self.discards = []
         self.hand = Hand()
         self.socketio = socketio
-        self.can_play = False
+        self.show_overlay = False
 
     def deal(self, tile):
         for t in self.hand.hidden:
@@ -37,7 +43,7 @@ class Player:
 
     def update(self):
         self.hand.sort()
-        if not self.can_play:
+        if not self.show_overlay:
             self.drawn_tile = None
             for tile in self.hand.hidden:
                 tile.selected = False
@@ -45,12 +51,13 @@ class Player:
             data = {
                 'html': render_template(f"{datatype}.html", player=self), 
                 'element': datatype,
-                'can_play': self.can_play,
+                'show_overlay': self.show_overlay,
             }
             self.socketio.emit("state_changed", data, to=self.sessionID)
     
     def set_can_play(self, can_play):
-        self.can_play = can_play
+        self.show_overlay = not can_play
+        log(f"{self.name} set show_overlay to {self.show_overlay}")
         self.update()
 
     def steal_options(self, tile):
@@ -64,9 +71,12 @@ class Player:
         self.update()
 
     def prompt_win(self):
-        self.socketio.emit('prompt_win', { 
-            'html': render_template('win-prompt.html', player=self, winning_hand=self.winning_hands[0]),
-        })
+        self.show_overlay = True
+        self.update()
+        data = { 
+            'html': render_template('win-prompt.html', player=self, winning_hand=self.winning_hands[0])
+        }
+        self.socketio.emit('prompt_win', data, to=self.sessionID)
 
     def steal(self, group):
         log(f"{self.name}: Stealing group {group}")
@@ -123,33 +133,41 @@ class Hand:
         return options
 
     def winning_hands(self):
-        if len(self.hidden + self.revealed) < 14: return []
+        start_time = time()
+        if len(self.all_tiles()) < 14: return []
         
         # Gather the components (groups) of a winning hand
         runs = self.runs_in_hand()
         triplets = self.triplets_in_hand()
         completed_groups = self.revealed.copy()
-        
+    
         ### Searching for a combination of 4 groups with no overlap
         default_search_space = runs + triplets + completed_groups
         if len(default_search_space) < 4: # If we don't have enough groups to form even one possible combination, we can move on.
             return []
 
+        log(f'Search space: ' + string_list(default_search_space, True))
+
         # If we have stolen some sets, they are stuck together permanently and must be used as-is, so we can reduce the search space
         # one of the stolen groups for as many as are available.
         search_spaces = [([completed_groups[i]] if i < len(completed_groups) else default_search_space) for i in range(4) ]
         potential_wins = []
-        for group1 in search_spaces[0]:
-            for group2 in search_spaces[1]:
-                if no_overlap(group1, group2):
-                    for group3 in search_spaces[2]:
-                        if no_overlap(group1, group2, group3):
-                            for group4 in search_spaces[3]:
-                                if no_overlap(group1, group2, group3, group4):
+        for i, group1 in enumerate(search_spaces[0]):
+            print(f'{i}/{len(search_spaces[0])}')
+            for j, group2 in enumerate(search_spaces[1]):
+                if j != i and no_overlap(group1, group2):
+                    for k, group3 in enumerate(search_spaces[2]):
+                        if k != i and k != j and no_overlap(group1, group2, group3):
+                            for l, group4 in enumerate(search_spaces[3]):
+                                if l != i and l != j and l != k and no_overlap(group1, group2, group3, group4):
                                     potential_win = [group1, group2, group3, group4]
                                     potential_win.sort()
                                     if not potential_win in potential_wins:
                                         potential_wins.append(potential_win)
+
+        for win in potential_wins:
+            print()
+            log(string_list(win, True))
 
         ### Searching for a pair
         # For each combination of 4 groups with no overlap, we check to see if, once all the tiles in the combination are removed,
@@ -165,6 +183,70 @@ class Hand:
                 potential_win.append([a, b])
                 winning_hands.append(potential_win)
 
+        log(f"Winning hand calculation took {int(time() - start_time)}s")
+        return winning_hands
+
+    def winning_hands(self):
+        start_time = time()
+        if len(self.all_tiles()) < 14: return []
+        
+        # Gather the components (groups) of a winning hand
+        runs = self.runs_in_hand()
+        triplets = self.triplets_in_hand()
+        completed_groups = self.revealed.copy()
+    
+        ### Searching for a combination of 4 groups with no overlap
+        default_search_space = runs + triplets + completed_groups
+        if len(default_search_space) < 4: # If we don't have enough groups to form even one possible combination, we can move on.
+            return []
+
+        default_search_space.sort()
+
+        # If we have stolen some sets, they are stuck together permanently and must be used as-is, so we can reduce the search space
+        # one of the stolen groups for as many as are available.
+        search_spaces = [([completed_groups[i]] if i < len(completed_groups) else default_search_space) for i in range(4) ]
+        potential_wins = []
+        print()
+        checked_groups = []
+        for i, group1 in enumerate(search_spaces[0]):
+            # print(f'\r({i}/{len(search_spaces[0])})', end='')
+            for j, group2 in enumerate(search_spaces[1]):
+                branch_2 = {i, j}
+                if branch_2 in checked_groups: break
+                if j != i and no_overlap(group1, group2):
+                    for k, group3 in enumerate(search_spaces[2]):
+                        branch_3 = {i, j, k}
+                        if branch_3 in checked_groups: break
+                        if k != i and k != j and no_overlap(group1, group2, group3):
+                            for l, group4 in enumerate(search_spaces[3]):
+                                branch_4 = {i, j, k, l}
+                                if branch_4 in checked_groups: break
+                                if l != i and l != j and l != k and no_overlap(group1, group2, group3, group4):
+                                    potential_win = [group1, group2, group3, group4]
+                                    if not potential_win in potential_wins:
+                                        potential_wins.append(potential_win)
+                                checked_groups.append(branch_4)
+                        checked_groups.append(branch_3)
+                checked_groups.append(branch_2)
+        print("Potential wins", len(potential_wins))
+        for win in potential_wins:
+            print()
+            log(string_list(win, True))
+        ### Searching for a pair
+        # For each combination of 4 groups with no overlap, we check to see if, once all the tiles in the combination are removed,
+        # there are two matching tiles left.
+        winning_hands = []
+        for potential_win in potential_wins:
+            hand = self.all_tiles()
+            for group in potential_win:
+                for tile in group:
+                    hand.remove(tile)
+            a, b = hand
+            if a.id == b.id:
+                potential_win.append([a, b])
+                winning_hands.append(potential_win)
+
+        log(f"Winning hand calculation took {int(time() - start_time)}s")
         return winning_hands
     
 

@@ -15,7 +15,7 @@ function main() {
 
     socket.on('state_changed', function state_changed(data) {
         document.getElementById(data.element).outerHTML = data.html;
-        document.getElementById("overlay").style.display = data.can_play ? 'none' : 'block';
+        document.getElementById("overlay").style.display = data.show_overlay ? 'block' : 'none';
         makePretty();
     });
 

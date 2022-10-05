@@ -21,7 +21,8 @@ class Game:
     DRAWING = 2
     WAITING_FOR_DISCARD = 3
     WAITING_FOR_STEAL = 4
-    GAME_WON = 5
+    WAITING_FOR_WIN = 5
+    GAME_WON = 6
 
     HAND_SIZE = 14
 
@@ -60,7 +61,8 @@ class Game:
             2: 'DRAWING',
             3: 'WAITING_FOR_DISCARD',
             4: 'WAITING_FOR_STEAL',
-            5: 'GAME_WON',
+            5: 'WAITING_FOR_WIN',
+            6: 'GAME_WON',
         }
         log(f"Set state to {states[state]}")
 
@@ -117,13 +119,14 @@ class Game:
         player = self.current_player()
         log(f"Starting {player.name}'s turn")
         player.deal(tile)
-        player.set_can_play(True)
-        player.update()
-        self.set_state(self.WAITING_FOR_DISCARD)
         if player.has_win():
             self.winner = player
             player.prompt_win()
+            self.state = Game.WAITING_FOR_WIN
             return
+        else:
+            player.set_can_play(True)
+        
 
     def end_turn(self, player):
         log(f"Ending {player.name}'s turn")
@@ -140,9 +143,12 @@ class Game:
             player.prompt_win()
             self.winner = player
             return
+        else:
+            player.set_can_play(True)
 
     def game_won(self):
         self.set_state(Game.GAME_WON)
-        self.socketio.emit('game_won', { 
+        data = { 
             'html': render_template('victory.html', player=self.winner, winning_hand=self.winner.winning_hands[0]),
-        })
+        }
+        self.socketio.emit('game_won', data, broadcast=True)

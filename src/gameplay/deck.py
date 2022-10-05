@@ -23,6 +23,8 @@ class Tile:
         'R': 1, 'G': 2, 'B': 3, 'Y': 4, 'O': 5, 'C': 6, 'M': 7, 'K': 8,
     }
 
+    uuid_counter = 0
+
     def __init__(self, id) -> None:
         self.symbol = id[1]
         self.color = id[0]
@@ -32,7 +34,9 @@ class Tile:
             self.number = int(id[1])
         else:
             self.id = Tile.value[id[1]] * 100 + Tile.value[id[0]]
-        self.uuid = uuid4()
+        self.uuid = Tile.uuid_counter
+        Tile.uuid_counter += 1
+
 
     def numeric(self):
         return self.symbol.isdigit()
@@ -40,6 +44,7 @@ class Tile:
     def __str__(self):
         clr = 'yellow' if self.suit == 'orange' else self.suit
         return f'[ {color(self.symbol, clr)} ]'
+        # return f'{self.uuid},'
 
     def __lt__(self, other):
         return self.id < other.id
@@ -59,6 +64,9 @@ class Tile:
 
     def __ge__(self, other):
         return self.id >= other.id
+
+    def __hash__(self) -> int:
+        return self.uuid
 
 
 class Deck:
@@ -81,7 +89,8 @@ class Deck:
         self.tiles = tiles
         
     def shuffle(self):
-        shuffle(self.tiles)
+        pass
+        # shuffle(self.tiles)
 
     def draw(self):
         result = self.tiles[0]

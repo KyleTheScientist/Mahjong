@@ -1,4 +1,5 @@
 import sys
+from time import time
 import unittest
 import colorama
 from unittest.mock import Mock, MagicMock
@@ -8,6 +9,7 @@ from unittest.mock import Mock, MagicMock
 
 from gameplay.deck import Tile
 from gameplay.player import Player, Hand, no_overlap
+from resource import string_list
 
 colorama.init()
 
@@ -19,10 +21,6 @@ def runs(tiles):
 
 def winning_hands(tiles):
     return hand_function('winning_hands', tiles)
-
-def string_list(tiles):
-    return ''.join([str(t) for t in tiles])
-
 
 def hand_function(func, tiles):
     player = Player("Test", 0)
@@ -66,8 +64,8 @@ class TestWinningHand(unittest.TestCase):
             Tile('R★'), Tile('G★'), Tile('B★'),
             Tile('MS'), Tile('MF')
         ]
-        
-        actual = self.setup(tiles).winning_hands
+        player = self.setup(tiles)
+        actual = player.hand.winning_hands()
         self.assertListEqual(
             actual, expected, winning_hand_fail_msg(actual, expected))
 
@@ -82,11 +80,12 @@ class TestWinningHand(unittest.TestCase):
         expected.sort()
         tiles = [*expected[0], *expected[1], *
                  expected[2], *expected[3], *expected[4]]
-        actual = self.setup(tiles).winning_hands
+        player = self.setup(tiles)
+        actual = player.hand.winning_hands()
         self.assertListEqual(
             actual, [expected], winning_hand_fail_msg(actual, expected))
 
-    def test_all_runs_revealed_hand(self):
+    def test_all_runs_revealed_group(self):
         expected = [
             [Tile('R1'), Tile('R2'), Tile('R3')],
             [Tile('G1'), Tile('G2'), Tile('G3')],
@@ -103,6 +102,24 @@ class TestWinningHand(unittest.TestCase):
         self.assertListEqual(
             actual, [expected], winning_hand_fail_msg(actual, expected))
 
+    def test_all_runs_revealed_hand(self):
+        expected = [
+            [Tile('R1'), Tile('R2'), Tile('R3')],
+            [Tile('G1'), Tile('G2'), Tile('G3')],
+            [Tile('B1'), Tile('B2'), Tile('B3')],
+            [Tile('B7'), Tile('B8'), Tile('B9')],
+            [Tile('MS'), Tile('MS')]
+        ]
+        expected.sort()
+        tiles = [*expected[0], *expected[1], *
+                 expected[2], *expected[3], *expected[4]]
+        player = self.setup(tiles)
+        for group in expected:
+            player.hand.reveal(group)
+        actual = player.hand.winning_hands()
+        self.assertListEqual(
+            actual, [expected], winning_hand_fail_msg(actual, expected))
+
     def test_all_triplets_winning_hand(self):
         expected = [
             [Tile('R1'), Tile('R1'), Tile('R1')],
@@ -114,7 +131,8 @@ class TestWinningHand(unittest.TestCase):
         expected.sort()
         tiles = [*expected[0], *expected[1], *
                  expected[2], *expected[3], *expected[4]]
-        actual = self.setup(tiles).winning_hands
+        player = self.setup(tiles)
+        actual = player.hand.winning_hands()
         self.assertListEqual(
             actual, [expected], winning_hand_fail_msg(actual, expected))
 
@@ -129,7 +147,8 @@ class TestWinningHand(unittest.TestCase):
         expected.sort()
         tiles = [*expected[0], *expected[1], *
                  expected[2], *expected[3], *expected[4]]
-        actual = self.setup(tiles).winning_hands
+        player = self.setup(tiles)
+        actual = player.hand.winning_hands()
         self.assertListEqual(
             actual, [expected], winning_hand_fail_msg(actual, expected))
 
@@ -141,22 +160,36 @@ class TestWinningHand(unittest.TestCase):
             Tile('B9'), Tile('B9'), Tile('B9'),
             Tile('MS'), Tile('MS')
         ]
-        actual = self.setup(tiles).winning_hands
+        player = self.setup(tiles)
+        actual = player.hand.winning_hands()
         self.assertEqual(len(actual), 2)
+
+    def test_performance_multiple_winning_hands(self):
+        tiles = [
+            Tile('R1'), Tile('R1'), Tile('R1'), Tile('R1'),
+            Tile('R2'), Tile('R2'), Tile('R2'), Tile('R2'),
+            Tile('R3'), Tile('R3'), Tile('R3'), Tile('R3'),
+            Tile('R4'), Tile('R4')
+        ]
+        player = self.setup(tiles)
+        actual = player.hand.winning_hands()
+
+
+# A: 34
+
 
 
 class TestMisc(unittest.TestCase):
 
     def test_no_overlap(self):
-        a = [Tile('R1'), Tile('R1'), Tile('R1')]
-        b = [Tile('R1'), Tile('R1'), Tile('R1')]
+        a = {Tile('R1'), Tile('R1'), Tile('R1')}
+        b = {Tile('R1'), Tile('R1'), Tile('R1')}
         self.assertTrue(no_overlap(a, b))
 
         o = Tile('R1')
-        a = [o, Tile('R1'), Tile('R1')]
-        b = [o, Tile('R1'), Tile('R1')]
+        a = {o, Tile('R1'), Tile('R1')}
+        b = {o, Tile('R1'), Tile('R1')}
         self.assertFalse(no_overlap(a, b))
-
 
 if __name__ == '__main__':
     unittest.main()
