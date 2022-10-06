@@ -111,7 +111,7 @@ def accept_win(data):
         game.game_won()
     else: 
         print(f"{player.name} did not accept their win.")
-        player.set_can_play(True)
+        player.set_overlay('hidden')
 
 @app.route('/game/player_view', methods=['GET'])
 @validate
@@ -129,4 +129,4 @@ def board():
     return '<h1>This is where the board will be</h1>'
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0')
+    socketio.run(app, host='0.0.0.0', port=80)

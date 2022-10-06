@@ -5,6 +5,7 @@ from flask_socketio import call
 from resource import log, string_list, color
 from gameplay.deck import Tile
 
+
 def _no_overlap(*sets):
     # sets = [set(g) for g in groups]
     return len(frozenset.intersection(*sets)) == 0
@@ -25,7 +26,7 @@ class Player:
         self.discards = []
         self.hand = Hand()
         self.socketio = socketio
-        self.show_overlay = False
+        self.overlay = 'default'
 
     def deal(self, tile):
         for t in self.hand.hidden:
@@ -41,24 +42,24 @@ class Player:
             return True
         return False
 
-    def update(self):
+    def update(self, **kwargs):
         self.hand.sort()
-        if not self.show_overlay:
+        if self.overlay == 'default':
             self.drawn_tile = None
             for tile in self.hand.hidden:
                 tile.selected = False
-        for datatype in ['hand', 'steal_options', 'revealed_groups']:
-            data = {
-                'html': render_template(f"{datatype}.html", player=self), 
+        data = []
+        for datatype in ['hand', 'steal_options', 'revealed_groups', 'overlay']:
+            data.append({
+                'html': render_template(f"{datatype}.html", player=self, **kwargs), 
                 'element': datatype,
-                'show_overlay': self.show_overlay,
-            }
-            self.socketio.emit("state_changed", data, to=self.sessionID)
+            })
+        self.socketio.emit("state_changed", data, to=self.sessionID)
     
-    def set_can_play(self, can_play):
-        self.show_overlay = not can_play
-        log(f"{self.name} set show_overlay to {self.show_overlay}")
-        self.update()
+    def set_overlay(self, overlay, **kwargs):
+        self.overlay = overlay
+        log(f"{self.name} set overlay to {overlay}")
+        self.update(**kwargs)
 
     def steal_options(self, tile):
         return self.hand.steal_options(tile)
@@ -71,12 +72,8 @@ class Player:
         self.update()
 
     def prompt_win(self):
-        self.show_overlay = True
+        self.set_overlay('win-prompt')
         self.update()
-        data = { 
-            'html': render_template('win-prompt.html', player=self, winning_hand=self.winning_hands[0])
-        }
-        self.socketio.emit('prompt_win', data, to=self.sessionID)
 
     def steal(self, group):
         log(f"{self.name}: Stealing group {group}")
@@ -186,7 +183,7 @@ class Hand:
         log(f"Winning hand calculation took {int(time() - start_time)}s")
         return winning_hands
 
-    def winning_hands(self):
+    def _winning_hands(self):
         start_time = time()
         if len(self.all_tiles()) < 14: return []
         

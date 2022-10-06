@@ -13,19 +13,10 @@ function main() {
         socket.emit('register', {});
     });
 
-    socket.on('state_changed', function state_changed(data) {
-        document.getElementById(data.element).outerHTML = data.html;
-        document.getElementById("overlay").style.display = data.show_overlay ? 'block' : 'none';
-        makePretty();
-    });
-
-    socket.on('prompt_win', function state_changed(data) {
-        document.getElementById("overlay").innerHTML = data.html;
-        makePretty();
-    });
-
-    socket.on('game_won', function state_changed(data) {
-        document.getElementById("overlay").innerHTML = data.html;
+    socket.on('state_changed', function state_changed(updates) {
+        Array.from(updates).forEach((data, index) => {
+            document.getElementById(data.element).outerHTML = data.html;
+        });
         makePretty();
     });
 }
@@ -44,9 +35,9 @@ function select(self) {
 
 function win(decision) {
     if (decision == 'accept') {
-        socket.emit('accept_win')
+        socket.emit('win_response', 'True')
     } else {
-        document.getElementById("overlay").setAttribute('display', 'none')
+        socket.emit('win_response', 'False')
     }
 }
 

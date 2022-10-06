@@ -15,7 +15,8 @@
     <div id="orientation-warning">
         <h1>Please rotate to landscape mode</h1>
     </div>
-    <div id="overlay"></div>
+    {% include 'overlay.html' %}
+    {% block overlay %}{% endblock %}
     <div id="container">
         {% include 'steal_options.html' %}
         {% block steal_options %}{% endblock %}
