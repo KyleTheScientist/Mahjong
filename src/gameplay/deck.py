@@ -44,7 +44,6 @@ class Tile:
     def __str__(self):
         clr = 'yellow' if self.suit == 'orange' else self.suit
         return f'[ {color(self.symbol, clr)} ]'
-        # return f'{self.uuid},'
 
     def __lt__(self, other):
         return self.id < other.id
@@ -89,8 +88,7 @@ class Deck:
         self.tiles = tiles
         
     def shuffle(self):
-        pass
-        # shuffle(self.tiles)
+        shuffle(self.tiles)
 
     def draw(self):
         result = self.tiles[0]

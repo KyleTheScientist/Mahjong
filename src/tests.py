@@ -114,7 +114,7 @@ class TestWinningHand(unittest.TestCase):
         tiles = [*expected[0], *expected[1], *
                  expected[2], *expected[3], *expected[4]]
         player = self.setup(tiles)
-        for group in expected:
+        for group in expected[:-1]:
             player.hand.reveal(group)
         actual = player.hand.winning_hands()
         self.assertListEqual(
@@ -174,11 +174,6 @@ class TestWinningHand(unittest.TestCase):
         player = self.setup(tiles)
         actual = player.hand.winning_hands()
 
-
-# A: 34
-
-
-
 class TestMisc(unittest.TestCase):
 
     def test_no_overlap(self):
@@ -190,6 +185,23 @@ class TestMisc(unittest.TestCase):
         a = {o, Tile('R1'), Tile('R1')}
         b = {o, Tile('R1'), Tile('R1')}
         self.assertFalse(no_overlap(a, b))
+
+    def test_remove_tiles_from_groups(self):
+        a = Tile('R1')
+        b = Tile('R2')
+        c = Tile('R3')
+        d = Tile('R4')
+        groups = [
+            [a, b, c],
+            [a, a, a],
+            [d, a, d],
+            [d, d, b],
+            [d, d, d],
+        ]
+        
+        actual = Hand().remove_tiles_from_groups([a, b, c], groups)
+        expected = [groups[4]]
+        self.assertListEqual(actual, expected)
 
 if __name__ == '__main__':
     unittest.main()

@@ -14,9 +14,9 @@
                     </div>
                     {% endfor %}
                 </div>
-                <div class="prompt-options">
-                    <button onclick="win('accept')">Kahjong</button>
-                    <button onclick="win('decline')">Decline</button>
+                <div class="options">
+                    <button class="prompt-option affirmative" id="accept-win" onclick="win('accept')">Kahjong!</button>
+                    <button class="prompt-option negative" id="decline-win" onclick="win('decline')">Decline</button>
                 </div>
             </div>
         </div>
@@ -35,6 +35,11 @@
                     </div>
                     {% endfor %}
                 </div>
+                {% if player.is_party_leader %}
+                <div class="options">
+                    <button class="prompt-option affirmative" onclick="restart()">Restart</button>
+                </div>
+                {% endif %}
             </div>
         </div>
     {% elif player.overlay=='default' %}

@@ -97,9 +97,10 @@ class Game:
             self.end_turn(player)
 
     def steal(self, group, player):
-        player.steal(int(group))
+        stole = player.steal(group)
         for p in self.players:
             p.end_steal()
+        return stole
 
     def deal(self):
         log(f"Dealing tiles to all players")
@@ -133,11 +134,14 @@ class Game:
         player.set_overlay('default')
         self.start_turn()
 
-    def end_steal(self, player):
+    def end_steal(self, player, stole):
         log(f"Ending {player.name}'s steal")
-        player.update()
         self.set_state(self.WAITING_FOR_DISCARD)
-        self.set_turn(self.indexof(player))
+        player.update()
+        if stole:
+            self.set_turn(self.indexof(player))
+        else:
+            self.end_turn(self.current_player())
         if player.has_win():
             player.prompt_win()
             self.winner = player
@@ -149,3 +153,14 @@ class Game:
         self.set_state(Game.GAME_WON)
         for player in self.players:
             player.set_overlay('winner', winner=self.winner)
+
+    def restart(self):
+        self.deck = Deck()
+        self.discard_pile = []
+        self.turn = 0
+        self.set_state(Game.DEALING)
+        for player in self.players:
+            player.reset()
+        # TODO Shuffle players
+        self.deal()
+        self.start_turn()

@@ -85,10 +85,9 @@ h1 {
     margin: 0;
 }
 
-.tile {
+.tile, .prompt-option {
     aspect-ratio: 5 / 6;
     min-height: 15vh;
-    background-color: #f2ecd8;
     border: .1vh solid #dbd2b694;
     border-left: 2px solid #f2ecd881;
     border-top: 2px solid #f2ecd881;
@@ -96,12 +95,29 @@ h1 {
     border-style: line;
     font-weight: bold;
     font-size: 9vh;
-    text-shadow: 5px 5px 0px #0000002c;
+    text-shadow: 3px 3px 0px #0000002c;
     box-shadow: .1vh .1vh #c0b799, .3vh .3vh #c0b799, .5vh .5vh #c0b799, .6vh .6vh #00000055;
     margin: 0vh 1vw 2vh 0vh;
     text-align: center;
     align-content: center;
     padding: 0 0 0 0;
+}
+
+#decline-steal {
+    min-width: 15vh;
+    min-height: 15vh;
+    aspect-ratio: 0;
+    padding: 1vh;
+}
+
+.options {
+    text-align: center;
+  }
+  
+.prompt-option {
+    aspect-ratio: 10 / 5;
+    background-color: #f2ecd8;
+    min-width: 50vh;
 }
 
 i.material-icons {
@@ -145,11 +161,11 @@ i.material-icons {
     margin-top: 2vh;
 }
 
-[suit="red"] {
+[suit="red"], .negative {
     color: #AA3300!important;
 }
 
-[suit="green"] {
+[suit="green"], .affirmative {
     color: #33AA00!important;
 }
 

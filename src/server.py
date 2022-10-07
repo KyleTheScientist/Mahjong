@@ -89,8 +89,8 @@ def discard_tile(id):
 def steal_tile(group):
     player = game.player(cookie('playerID'))
     if game.player_can_steal(player):
-        game.steal(group, player)
-        game.end_steal(player)
+        stole = game.steal(group, player)
+        game.end_steal(player, stole)
 
 @socketio.on('request_start_game')
 @validate
@@ -112,6 +112,14 @@ def accept_win(data):
     else: 
         print(f"{player.name} did not accept their win.")
         player.set_overlay('hidden')
+
+@socketio.on('restart')
+@validate
+def restart():
+    player = game.player(cookie('playerID'))
+    print(f"{player.name} requested to restart.")
+    if player.is_party_leader:
+        game.restart()
 
 @app.route('/game/player_view', methods=['GET'])
 @validate

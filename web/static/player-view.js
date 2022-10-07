@@ -41,9 +41,17 @@ function win(decision) {
     }
 }
 
+function restart() {
+    socket.emit('restart')
 
-function steal(self) {
-    socket.emit('steal_tile', self.parentElement.getAttribute('index'));
+}
+
+function steal(choice) {
+    if (choice == 'skip') {
+        socket.emit('steal_tile', 'skip');
+        return;
+    }
+    socket.emit('steal_tile', choice.parentElement.getAttribute('index'));
 }
 
 
