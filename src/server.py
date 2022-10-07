@@ -23,6 +23,8 @@ socketio = SocketIO(app)
 game = Game(socketio)
 ###########################################################################
 
+
+### Login/Validation ###
 def cookie(name):
     return request.cookies.get(name)
 
@@ -36,6 +38,10 @@ def validate(func):
         return func(*args, **kw)
     return wrapper
 
+@app.route('/')
+def index():
+    return redirect(url_for('login'))
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -44,6 +50,7 @@ def login():
         try:
             name = request.form['name']
             player = game.add_player(name)
+            update_board()
             response = redirect(url_for('waiting_for_players'))
             response.set_cookie('gameID', game.id)
             response.set_cookie('playerID', player.id)  
@@ -76,21 +83,9 @@ def register_socket(data):
     print(f'All players are registered.')
     game.deal()
     game.start_turn()
+    update_board()
 
-@socketio.on('discard_tile')
-@validate
-def discard_tile(id):
-    player = game.player(cookie('playerID'))
-    if game.player_can_discard(player):
-        game.discard(id, player)
-
-@socketio.on('steal_tile')
-@validate
-def steal_tile(group):
-    player = game.player(cookie('playerID'))
-    if game.player_can_steal(player):
-        stole = game.steal(group, player)
-        game.end_steal(player, stole)
+### Game Management ###
 
 @socketio.on('request_start_game')
 @validate
@@ -102,17 +97,6 @@ def start_game():
         return "OK", 200
     return "Not party lead", 401
 
-@socketio.on('win_response')
-@validate
-def accept_win(data):
-    player = game.player(cookie('playerID'))
-    if data == "True":
-        print(f"{player.name} accepted their win.")
-        game.game_won()
-    else: 
-        print(f"{player.name} did not accept their win.")
-        player.set_overlay('hidden')
-
 @socketio.on('restart')
 @validate
 def restart():
@@ -120,21 +104,55 @@ def restart():
     print(f"{player.name} requested to restart.")
     if player.is_party_leader:
         game.restart()
+        update_board()
+
+
+### Gameplay ###
+
+@socketio.on('discard_tile')
+@validate
+def discard_tile(id):
+    player = game.player(cookie('playerID'))
+    if game.player_can_discard(player):
+        game.discard(id, player)
+        update_board()
+
+@socketio.on('steal_tile')
+@validate
+def steal_tile(group):
+    player = game.player(cookie('playerID'))
+    if game.player_can_steal(player):
+        stole = game.steal(group, player)
+        game.end_steal(player, stole)
+        update_board()
+
+@socketio.on('win_response')
+@validate
+def accept_win(data):
+    player = game.player(cookie('playerID'))
+    if data == "True":
+        print(f"{player.name} accepted their win.")
+        game.game_won()
+        update_board()
+    else: 
+        print(f"{player.name} did not accept their win.")
+        player.set_overlay('hidden')
 
 @app.route('/game/player_view', methods=['GET'])
 @validate
 def player_view():
     with app.app_context():
         player_id = cookie("playerID")
-        return render_template('player-view.html', game=game, player=game.player(player_id))
-
-@app.route('/')
-def index():
-    return redirect(url_for('login'))
+        return render_template('player-view.html', player=game.player(player_id))
 
 @app.route('/game/board')
 def board():
-    return '<h1>This is where the board will be</h1>'
+    return render_template('board-view.html', players=game.players)
+
+
+def update_board():
+    print('Updating board')
+    socketio.emit('board_state_changed', {'html': render_template('board.html', players=game.players)}, broadcast=True)
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=80)

@@ -8,7 +8,7 @@
         {% for group in player.hand.revealed %}
         <div class="tile-group" index="{{ loop.index0 }}">
             {% for tile in group %}
-            <button class="tile revealed" suit="{{ tile.suit }}">{{ tile.symbol }}</button>
+            <button class="tile revealed" suit="{{ tile.suit }}"><span class="symbol">{{ tile.symbol }}</span></button>
             {% endfor %}
         </div>
         {% endfor %}

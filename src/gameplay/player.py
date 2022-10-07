@@ -23,20 +23,20 @@ class Player:
     def __init__(self, name, socketio):
         self.name = name
         self.id = str(uuid4())
-        self.hand = Hand()
         self.socketio = socketio
-        self.overlay = 'default'
-
+        self.reset()
+    
     def reset(self):
         self.hand = Hand()
+        self.discards = []
         self.overlay = 'default'
-        self.update()
 
     def deal(self, tile):
         for t in self.hand.hidden:
             t.selected = False
         self.hand.hidden.append(tile)
         tile.selected = True
+        tile.parent = self
         self.drawn_tile = tile
         
     def has_win(self):
@@ -84,8 +84,11 @@ class Player:
             log(f"{self.name} declined to steal")
             return False
 
+        stolen_tile = self._steal_tile
         log(f"{self.name}: Stealing group {group}")
-        self.hand.hidden.append(self._steal_tile)
+        self.hand.hidden.append(stolen_tile)
+        stolen_tile.parent.discards.remove(stolen_tile)
+        stolen_tile.parent = self
         tiles = self._steal_options[int(group)]
         self.hand.reveal(tiles)
         self.update()
@@ -106,6 +109,7 @@ class Player:
         if discarded:
             log(f"{self.name} is discarding {tile}")
             self.hand.hidden.remove(discarded)
+            self.discards.append(discarded)
             return discarded
         raise LookupError(f"Tile with id '{id}' not found in {self.name}'s hand.")
 

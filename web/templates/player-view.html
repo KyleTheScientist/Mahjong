@@ -1,13 +1,9 @@
 <!DOCTYPE html>
 
 <head>
-    <meta name="viewport" content="minimal-ui, width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link rel="manifest" href="/static/manifest.json">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    {% include 'gameplay-head.html' %}
+    {% block head %}{% endblock %}
     <link rel="stylesheet" href="/static/player-view.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi+Ink">
-    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script type="text/javascript" src="/static/player-view.js"></script>
 </head>
 

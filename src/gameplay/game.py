@@ -79,7 +79,6 @@ class Game:
     def discard(self, id, player):
         tile = player.discard(id)
         player.update()
-        self.discard_pile.append(tile)
         self.thieves = []
         # update board
         for i in range(1, len(self.players)):
@@ -161,6 +160,7 @@ class Game:
         self.set_state(Game.DEALING)
         for player in self.players:
             player.reset()
+            player.update()
         # TODO Shuffle players
         self.deal()
         self.start_turn()

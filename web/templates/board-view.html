@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+
+<head>
+    {% include 'gameplay-head.html' %}
+    {% block head %}{% endblock %}
+    <link rel="stylesheet" href="/static/board.css">
+    <script type="text/javascript" src="/static/board.js"></script>
+</head>
+
+<body>
+    <div id="board">
+        {% include 'board.html' %}
+        {% block board %}{% endblock %}
+    </div>
+</body>
+

@@ -16,10 +16,15 @@ class Tile:
     }
 
     value = {
+        # Digits
         '1': 1, '2': 2, '3': 3,
         '4': 4, '5': 5, '6': 6,
         '7': 7, '8': 8, '9': 9,
-        'S': 1, 'F': 2, 'W': 3, 'P': 4, '★': 5,
+        # Seasons
+        'S': 1, 'F': 2, 'W': 3, 'P': 4,
+        # Elements
+        'I': 5, 'E': 7, 'T': 6, 'A': 8,
+        # Colors
         'R': 1, 'G': 2, 'B': 3, 'Y': 4, 'O': 5, 'C': 6, 'M': 7, 'K': 8,
     }
 
@@ -76,9 +81,9 @@ class Deck:
                 for _ in range(4):
                     tiles.append(Tile(color + str(number)))
 
-        for color in ['R', 'G', 'B']:
+        for element, color in [('I', 'R'), ('T', 'B'), ('E', 'G'), ('A', 'K')]:
             for _ in range(4):
-                tiles.append(Tile(color + '★'))
+                tiles.append(Tile(color + element))
 
         for season, color in [('S', 'K'), ('F', 'K'), ('W', 'K'), ('P', 'K')]:
             for _ in range(4):

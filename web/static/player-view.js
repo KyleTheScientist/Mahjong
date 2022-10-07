@@ -1,12 +1,16 @@
 const socket = io();
 
 special_symbols = {
-    S: '<i class="material-icons">brightness_low</i>',
-    F: '<i class="material-icons">eco</i>',
-    W: '<i class="material-icons">ac_unit</i>',
-    P: '<i class="material-icons">local_florist</i>',
+    S: '<span class="material-icons">brightness_low</span>',
+    F: '<span class="material-icons">eco</span>',
+    W: '<span class="material-icons">ac_unit</span>',
+    P: '<span class="material-icons">local_florist</span>',
+    
+    I: '<span class="material-icons">local_fire_department</span>',
+    T: '<span class="material-icons">water</span>',
+    E: '<span class="material-icons">landscape</span>',
+    A: '<span class="material-icons"></span>',
 }
-
 
 function main() {
     socket.on('connect', function () {
