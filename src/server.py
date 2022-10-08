@@ -147,12 +147,20 @@ def player_view():
 
 @app.route('/game/board')
 def board():
-    return render_template('board-view.html', players=game.players)
+    return render_template('board-view.html', 
+        players=game.players,
+        show_overlay=(game.winner is not None),
+        winner = game.winner
+    )
 
-
-def update_board():
+def update_board(overlay="hidden"):
     print('Updating board')
-    socketio.emit('board_state_changed', {'html': render_template('board.html', players=game.players)}, broadcast=True)
+    socketio.emit('board_state_changed', {
+        'html': render_template('board.html', 
+            players=game.players, 
+            show_overlay=(game.winner is not None),
+            winner = game.winner
+        )}, broadcast=True)
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=80)

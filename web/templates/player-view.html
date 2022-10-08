@@ -4,6 +4,7 @@
     {% include 'gameplay-head.html' %}
     {% block head %}{% endblock %}
     <link rel="stylesheet" href="/static/player-view.css">
+    <link rel="stylesheet" href="/static/overlay.css">
     <script type="text/javascript" src="/static/player-view.js"></script>
 </head>
 
@@ -11,7 +12,7 @@
     <div id="orientation-warning">
         <h1>Please rotate to landscape mode</h1>
     </div>
-    {% include 'overlay.html' %}
+    {% include 'player-overlays.html' %}
     {% block overlay %}{% endblock %}
     <div id="container">
         {% include 'steal_options.html' %}

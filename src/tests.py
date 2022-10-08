@@ -61,7 +61,7 @@ class TestWinningHand(unittest.TestCase):
             Tile('R1'), Tile('R3'), Tile('R5'),
             Tile('G1'), Tile('G3'), Tile('G5'),
             Tile('B1'), Tile('B3'), Tile('B5'),
-            Tile('R★'), Tile('G★'), Tile('B★'),
+            Tile('RI'), Tile('GE'), Tile('BT'),
             Tile('MS'), Tile('MF')
         ]
         player = self.setup(tiles)
@@ -173,6 +173,175 @@ class TestWinningHand(unittest.TestCase):
         ]
         player = self.setup(tiles)
         actual = player.hand.winning_hands()
+
+class TestWinModifiers(unittest.TestCase):
+
+    def setup(self, tiles):
+        player = Player("Test", None)
+        player.update = Mock()
+        for tile in tiles:
+            player.deal(tile)
+        return player
+
+    def expected(self, *names):
+        modifiers = []
+        value = 1
+        for name in names:
+            modifiers.append({name: Hand.modifiers[name]})
+            value += Hand.modifiers[name]
+        return value, modifiers
+
+    def test_no_stealing(self):
+        tiles = [
+            Tile('R1'), Tile('R2'), Tile('R3'),
+            Tile('G4'), Tile('G5'), Tile('G6'),
+            Tile('B7'), Tile('B8'), Tile('B9'),
+            Tile('KP'), Tile('KP'), Tile('KP'),
+            Tile('KS'), Tile('KS')
+        ]
+        player = self.setup(tiles)
+        hands = player.hand.winning_hands()
+        self.assertEqual(player.hand.score(hands[0]), self.expected('No Stealing'))
+
+    def test_no_stealing_fail(self):
+        revealed = [Tile('R1'), Tile('R2'), Tile('R3')]
+        tiles = [
+            *revealed,
+            Tile('G4'), Tile('G5'), Tile('G6'),
+            Tile('B7'), Tile('B8'), Tile('B9'),
+            Tile('KP'), Tile('KP'), Tile('KP'),
+            Tile('KS'), Tile('KS')
+        ]
+        player = self.setup(tiles)
+        player.hand.reveal(revealed)
+        hands = player.hand.winning_hands()
+        self.assertEqual(player.hand.score(hands[0]), self.expected())
+
+    def test_only_one_suit(self):
+        revealed = [Tile('R1'), Tile('R2'), Tile('R3')]
+        tiles = [
+            *revealed,
+            Tile('R1'), Tile('R2'), Tile('R3'),
+            Tile('R4'), Tile('R5'), Tile('R6'),
+            Tile('R4'), Tile('R5'), Tile('R6'),
+            Tile('RS'), Tile('RS')
+        ]
+        player = self.setup(tiles)
+        player.hand.reveal(revealed)
+        hands = player.hand.winning_hands()
+        self.assertEqual(player.hand.score(hands[0]), self.expected('Only One Suit'))
+        
+    def test_only_one_suit_fail(self):
+        revealed = [Tile('R1'), Tile('R2'), Tile('R3')]
+        tiles = [
+            *revealed,
+            Tile('R1'), Tile('R2'), Tile('R3'),
+            Tile('R4'), Tile('R5'), Tile('R6'),
+            Tile('G4'), Tile('G5'), Tile('G6'),
+            Tile('RS'), Tile('RS')
+        ]
+        player = self.setup(tiles)
+        player.hand.reveal(revealed)
+        hands = player.hand.winning_hands()
+        self.assertEqual(player.hand.score(hands[0]), self.expected())
+
+    def test_large_straight(self):
+        revealed = [Tile('G1'), Tile('G2'), Tile('G3')]
+        tiles = [
+            *revealed,
+            Tile('G7'), Tile('G8'), Tile('G9'),
+            Tile('G4'), Tile('G5'), Tile('G6'),
+            Tile('G1'), Tile('G2'), Tile('G3'),
+            Tile('B8'), Tile('B8')
+        ]
+        player = self.setup(tiles)
+        player.hand.reveal(revealed)
+        hands = player.hand.winning_hands()
+        self.assertEqual(player.hand.score(hands[0]), self.expected('Large Straight'))
+
+    def test_large_straight_fail(self):
+        revealed = [Tile('G1'), Tile('G2'), Tile('G3')]
+        tiles = [
+            *revealed,
+            Tile('G7'), Tile('G8'), Tile('G9'),
+            Tile('G5'), Tile('G5'), Tile('G5'),
+            Tile('G1'), Tile('G2'), Tile('G3'),
+            Tile('RS'), Tile('RS')
+        ]
+        player = self.setup(tiles)
+        player.hand.reveal(revealed)
+        hands = player.hand.winning_hands()
+        self.assertEqual(player.hand.score(hands[0]), self.expected())
+
+    def test_same_group_in_all_suits_runs(self):
+        revealed = [Tile('G1'), Tile('G2'), Tile('G3')]
+        tiles = [
+            *revealed,
+            Tile('R1'), Tile('R2'), Tile('R3'),
+            Tile('B1'), Tile('B2'), Tile('B3'),
+            Tile('G1'), Tile('G2'), Tile('G3'),
+            Tile('B8'), Tile('B8')
+        ]
+        player = self.setup(tiles)
+        player.hand.reveal(revealed)
+        hands = player.hand.winning_hands()
+        self.assertEqual(player.hand.score(hands[0]), self.expected('Same Group In All Suits'))
+
+    def test_same_group_in_all_suits_triplets(self):
+        revealed = [Tile('G1'), Tile('G1'), Tile('G1')]
+        tiles = [
+            *revealed,
+            Tile('R1'), Tile('R1'), Tile('R1'),
+            Tile('B1'), Tile('B1'), Tile('B1'),
+            Tile('G1'), Tile('G2'), Tile('G3'),
+            Tile('B8'), Tile('B8')
+        ]
+        player = self.setup(tiles)
+        player.hand.reveal(revealed)
+        hands = player.hand.winning_hands()
+        self.assertEqual(player.hand.score(hands[0]), self.expected('Same Group In All Suits'))
+    
+    def test_same_group_in_all_suits_fail(self):
+        revealed = [Tile('G1'), Tile('G1'), Tile('G1')]
+        tiles = [
+            *revealed,
+            Tile('R1'), Tile('R1'), Tile('R1'),
+            Tile('B1'), Tile('B2'), Tile('B3'),
+            Tile('G1'), Tile('G2'), Tile('G3'),
+            Tile('B8'), Tile('B8')
+        ]
+        player = self.setup(tiles)
+        player.hand.reveal(revealed)
+        hands = player.hand.winning_hands()
+        self.assertEqual(player.hand.score(hands[0]), self.expected())
+
+    def test_all_triplets(self):
+        revealed = [Tile('G1'), Tile('G1'), Tile('G1')]
+        tiles = [
+            *revealed,
+            Tile('R1'), Tile('R1'), Tile('R1'),
+            Tile('G2'), Tile('G2'), Tile('G2'),
+            Tile('B2'), Tile('B2'), Tile('B2'),
+            Tile('B8'), Tile('B8')
+        ]
+        player = self.setup(tiles)
+        player.hand.reveal(revealed)
+        hands = player.hand.winning_hands()
+        self.assertEqual(player.hand.score(hands[0]), self.expected('All Triplets'))
+
+    def test_all_natural(self):
+        revealed = [Tile('KS'), Tile('KS'), Tile('KS')]
+        tiles = [
+            *revealed,
+            Tile('KP'), Tile('KP'), Tile('KP'),
+            Tile('GE'), Tile('GE'), Tile('GE'),
+            Tile('KA'), Tile('KA'), Tile('KA'),
+            Tile('KW'), Tile('KW')
+        ]
+        player = self.setup(tiles)
+        player.hand.reveal(revealed)
+        hands = player.hand.winning_hands()
+        self.assertEqual(player.hand.score(hands[0]), self.expected('All Triplets', 'All Natural'))
 
 class TestMisc(unittest.TestCase):
 

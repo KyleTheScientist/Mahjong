@@ -1,35 +1,11 @@
 {% block board %}
     {% for player in players %}
         <div class="player-container">
-            <div class="player-name"><h1>{{ player.name }}</h1></div>
+            <div class="player-name"><h1>{{ player.name }}<br> {{ player.score }} pts</h1></div>
             <div class="player-tiles">
                 <div class="player-hand">
                     {% for tile in player.hand.hidden %}
                         <button class="tile hidden" suit="black"></button>
-                    {% endfor %}
-                    {% for group in player.hand.revealed %}
-                        <div class="tile-group" index="{{ loop.index0 }}">
-                            {% for tile in group %}
-                                <button class="tile revealed" suit="{{ tile.suit }}"><span class="symbol">{{ tile.symbol }}</span></button>
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-                </div>
-                <div class="player-discards">
-                    {% for tile in player.discards %}
-                        <button class="tile discarded" suit="{{ tile.suit }}"><span class="symbol">{{ tile.symbol }}</span></button>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    {% endfor %}
-    {% for player in players %}
-        <div class="player-container">
-            <div class="player-name">{{ player.name }}</div>
-            <div class="player-tiles">
-                <div class="player-hand">
-                    {% for tile in player.hand.hidden %}
-                        <button class="tile" suit="black"></button>
                     {% endfor %}
                     {% for group in player.hand.revealed %}
                         <div class="tile-group" index="{{ loop.index0 }}">

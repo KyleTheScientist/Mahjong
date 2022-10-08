@@ -37,7 +37,7 @@ body {
   overflow-wrap: break-word;
   /* vertical-align: middle; */
   padding: .5vh .5vw .5vh .5vw;
-  min-width: 5vw;
+  min-width: 10vw;
   max-width: 10vw;
 }
 

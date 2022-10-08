@@ -1,0 +1,53 @@
+.red,
+.negative {
+    color: #AA3300 !important;
+}
+
+.green,
+.affirmative {
+    color: #33AA00 !important;
+}
+
+.blue {
+    color: #3366AA !important;
+}
+
+.yellow {
+    color: #e5bc04 !important;
+}
+
+.orange {
+    color: #e56504 !important;
+}
+
+.cyan {
+    color: #32cee2 !important;
+}
+
+.magenta {
+    color: #c44dd1 !important;
+}
+
+.bg-tile {
+    background-color: #f2ecd8;
+}
+
+.bg-green {
+    background-color: #34a34c;
+}
+
+.bg-dark-green {
+    background-color: #243f2a;
+}
+
+.bg-highlight {
+    background-color: #eddca3;
+}
+
+.bg-blue {
+    background-color: #344ca3;
+}
+
+.bg-gray {
+    background-color: #262626;
+}

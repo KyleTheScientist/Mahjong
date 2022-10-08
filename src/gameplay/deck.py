@@ -3,6 +3,33 @@ from colorama import init, Fore, Style
 from uuid import uuid4
 from resource import color
 
+class Deck:
+    def __init__(self):
+        tiles = []
+        for color in ['R', 'G', 'B']:
+            for number in range(1, 10):
+                for _ in range(4):
+                    tiles.append(Tile(color + str(number)))
+
+        for element, color in [('I', 'R'), ('T', 'B'), ('E', 'G'), ('A', 'K')]:
+            for _ in range(4):
+                tiles.append(Tile(color + element))
+
+        for season, color in [('S', 'K'), ('F', 'K'), ('W', 'K'), ('P', 'K')]:
+            for _ in range(4):
+                tiles.append(Tile(color + season))
+
+        tiles.sort()
+        self.tiles = tiles
+        
+    def shuffle(self):
+        shuffle(self.tiles)
+
+    def draw(self):
+        result = self.tiles[0]
+        self.tiles = self.tiles[1:]
+        return result
+
 class Tile:
     color_map = {
         'R': 'red',
@@ -71,31 +98,3 @@ class Tile:
 
     def __hash__(self) -> int:
         return self.uuid
-
-
-class Deck:
-    def __init__(self):
-        tiles = []
-        for color in ['R', 'G', 'B']:
-            for number in range(1, 10):
-                for _ in range(4):
-                    tiles.append(Tile(color + str(number)))
-
-        for element, color in [('I', 'R'), ('T', 'B'), ('E', 'G'), ('A', 'K')]:
-            for _ in range(4):
-                tiles.append(Tile(color + element))
-
-        for season, color in [('S', 'K'), ('F', 'K'), ('W', 'K'), ('P', 'K')]:
-            for _ in range(4):
-                tiles.append(Tile(color + season))
-
-        tiles.sort()
-        self.tiles = tiles
-        
-    def shuffle(self):
-        shuffle(self.tiles)
-
-    def draw(self):
-        result = self.tiles[0]
-        self.tiles = self.tiles[1:]
-        return result

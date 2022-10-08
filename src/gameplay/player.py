@@ -1,35 +1,25 @@
-from time import time
+from resource import color, log, string_list
 from uuid import uuid4
+
 from flask import render_template
 from flask_socketio import call
-from resource import log, string_list, color
-from gameplay.deck import Tile
 
-
-def _no_overlap(*sets):
-    # sets = [set(g) for g in groups]
-    return len(frozenset.intersection(*sets)) == 0
-
-def no_overlap(*lists):
-    total_length = 0
-    s = set()
-
-    for i in lists:
-        s = s.union([t.uuid for t in i])
-        total_length += len(i)
-    return len(s) == total_length
+from gameplay.hand import Hand
 
 class Player:
     def __init__(self, name, socketio):
         self.name = name
         self.id = str(uuid4())
         self.socketio = socketio
+        self.score = 0
         self.reset()
     
-    def reset(self):
+    def reset(self, new_game=False):
         self.hand = Hand()
         self.discards = []
         self.overlay = 'default'
+        if new_game: 
+            self.score = 0
 
     def deal(self, tile):
         for t in self.hand.hidden:
@@ -40,9 +30,9 @@ class Player:
         self.drawn_tile = tile
         
     def has_win(self):
-        self.winning_hands = self.hand.winning_hands()
-        if len(self.winning_hands) > 0:
-            log(f"{self.name} has {len(self.winning_hands)} winning hands!")
+        self.winning_hand = self.hand.winning_hand()
+        if self.winning_hand:
+            log(f"{self.name} has a winning hand!")
             return True
         return False
 
@@ -120,141 +110,4 @@ class Player:
             return self.hand.hidden
         return self.__getattribute__(name)
 
-
-class Hand:
-
-    def __init__(self):
-        self.hidden = []
-        self.revealed = []
-
-    def reveal(self, tiles):
-        for tile in tiles:
-            self.hidden.remove(tile)
-        self.revealed.append(tiles)
-
-    def sort(self):
-        self.hidden.sort()
-
-    def steal_options(self, tile):
-        options = self.runs_with_tile(tile)
-        triplet = self.triplets_with_tile(tile)
-        if triplet:
-            options.append(triplet)
-        return options
-
-    def winning_hands(self):
-        start_time = time()
-
-        if len(self.all_tiles()) < 14: return []
-        
-        # Gather the components (groups) of a winning hand
-        groups = self.revealed.copy()
-        groups.extend(self.triplets_in_hand())
-        groups.extend(self.runs_in_hand())
-
-        ### Searching for a combination of 4 groups with no overlap
-        potential_wins = []
-        for groupA in groups:
-            subsearchA = self.remove_tiles_from_groups(groupA, groups)
-            for groupB in subsearchA:
-                subsearchB = self.remove_tiles_from_groups(groupB, subsearchA)
-                for groupC in subsearchB:
-                    subsearchC = self.remove_tiles_from_groups(groupC, subsearchB)
-                    for groupD in subsearchC:
-                        potential_win = [groupA, groupB, groupC, groupD]
-                        potential_win.sort()
-                        if potential_win not in potential_wins:
-                            potential_wins.append(potential_win)
-
-        winning_hands = []
-        for potential_win in potential_wins:
-            hand = self.all_tiles()
-            for group in potential_win:
-                for tile in group:
-                    hand.remove(tile)
-            a, b = hand
-            if a.id == b.id:
-                potential_win.sort()
-                potential_win.append([a, b])
-                if potential_win not in winning_hands:
-                    winning_hands.append(potential_win)
-
-        log(f"Winning hand calculation took {int(time() - start_time)}s")
-        return winning_hands
-    
-    def remove_tiles_from_groups(self, tiles, groups):
-        result = []
-        for group in groups:
-            ok = True
-            for t1 in group:
-                for t2 in tiles:
-                    if t1.uuid == t2.uuid:
-                        ok = False
-                        break
-                    if not ok:
-                        break
-            if ok: result.append(group)
-        return result
-
-    def runs_in_hand(self):
-        digit_tiles = [t for t in self.hidden if (t.numeric())]
-        return self.runs(digit_tiles)
-
-    def triplets_in_hand(self):
-        self.hidden.sort()
-        triplets = []
-        last = Tile('K9')
-        for tile in self.hidden:
-            if tile.id != last.id:
-                triplet = []
-            triplet.append(tile)
-            if len(triplet) == 3:
-                triplets.append(triplet)
-                triplet = []
-            last = tile
-        return triplets
-    
-    def runs_with_tile(self, tile):
-        if not tile.numeric():
-            return []
-        
-        digit_tiles = [t for t in self.hidden if (t.numeric() and t.color == tile.color)]
-        digit_tiles.append(tile)
-        
-        runs = []
-        potential_runs = self.runs(digit_tiles)
-        for potential_run in potential_runs: 
-            potential_run.sort()
-            if tile in potential_run and not potential_run in runs:
-                runs.append(potential_run)
-        return runs
-
-    def triplets_with_tile(self, tile):
-        matches = [tile]
-        for t in self.hidden:
-            if t.id == tile.id:
-                matches.append(t)
-        if len(matches) == 3:
-            return matches
-        return None
-            
-    def runs(self, tileset):
-        # Basically brute forcing it with slight optimization
-        potential_runs = []
-        for a in tileset:
-            first = a.number
-            for b in tileset:
-                second = b.number
-                if second == first + 1 and a.color == b.color:
-                    for c in tileset:
-                        third = c.number
-                        if third == second + 1 and b.color == c.color:
-                            potential_runs.append([a, b, c])
-        return potential_runs
-
-    def all_tiles(self):
-        tiles = [tile for tile in self.hidden]
-        for group in self.revealed:
-            tiles.extend(group)
-        return tiles
 

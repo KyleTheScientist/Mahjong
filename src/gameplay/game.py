@@ -34,6 +34,7 @@ class Game:
         self.players = []
         self.deck = Deck()
         self.turn = 0
+        self.winner = None
         self.discard_pile = []
         self.thieves = []
 
@@ -115,6 +116,9 @@ class Game:
 
     def start_turn(self):
         self.set_state(Game.DRAWING)
+        if len(self.deck.tiles) == 0:
+            self.game_drawn()
+            return
         tile = self.deck.draw()
         player = self.current_player()
         log(f"Starting {player.name}'s turn")
@@ -149,15 +153,26 @@ class Game:
             player.set_overlay('hidden')
 
     def game_won(self):
+        if self.state == Game.GAME_WON:
+            return
         self.set_state(Game.GAME_WON)
+        self.winner.score += self.winner.winning_hand.score
         for player in self.players:
             player.set_overlay('winner', winner=self.winner)
 
+    def game_drawn(self):
+        self.set_state(Game.GAME_WON)
+        for player in self.players:
+            player.set_overlay('draw', winner=self.winner)
+
     def restart(self):
+        if self.state != Game.GAME_WON:
+            return
+        self.set_state(Game.DEALING)
         self.deck = Deck()
         self.discard_pile = []
         self.turn = 0
-        self.set_state(Game.DEALING)
+        self.winner = None
         for player in self.players:
             player.reset()
             player.update()
