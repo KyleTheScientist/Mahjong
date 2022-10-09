@@ -2,6 +2,7 @@ from random import shuffle
 from colorama import init, Fore, Style
 from uuid import uuid4
 from resource import color
+from resource import log
 
 class Deck:
     def __init__(self):
@@ -23,8 +24,8 @@ class Deck:
         self.tiles = tiles
         
     def shuffle(self):
-        pass
-        # shuffle(self.tiles)
+        log('Shuffing') # Honestly just a placeholder so I can comment out the next line for testing
+        shuffle(self.tiles)
 
     def draw(self):
         result = self.tiles[0]

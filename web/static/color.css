@@ -13,13 +13,14 @@
     --bg-blue: #344ca3;
     --bg-gray: #262626;
     --bg-black: #000000;
+    --bg-transparent: #00000000;
     
     --bg-overlay: #1d1d1db2;
     
     --bg-tile: #ebe2c4;
     --bg-tile-highlighted: #eddca3;
     --bg-tile-stolen: #beb288;
-    --bg-tile-flipped: #2b8a5e;
+    --bg-tile-flipped: #1d5f40;
     --bg-tile-group: #00000044;
     
     
@@ -28,6 +29,8 @@
     --tile-border-light: #f2ecd881;
     --tile-border-stolen: #857c60;
     --tile-border-stolen-light: #b9b5a481;
+    --tile-border-flipped: #1f6444;
+    --tile-border-flipped-light: #297a54;
 
 
     --sclr: #c0b799;
@@ -98,4 +101,8 @@
 
 .bg-gray {
     background-color: var(--bg-gray);
+}
+
+.bg-transparent {
+    background-color: var(--bg-transparent)!important;
 }

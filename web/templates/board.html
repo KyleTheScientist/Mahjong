@@ -1,27 +1,31 @@
 {% block board %}
-    {% for player in players %}
-        <div class="player-container">
-            <div class="player-name bg-gray"><h1>{{ player.name }}<br> {{ player.score }} pts</h1></div>
-            <div class="player-tiles">
-                <div class="player-hand bg-green">
-                    {% for tile in player.hand.hidden %}
-                        <button class="tile x-small-tile flipped"></button>
-                    {% endfor %}
-                    {% for group in player.hand.revealed %}
-                        <div class="tile-group" index="{{ loop.index0 }}">
-                            {% for tile in group %}
-                                <button class="tile x-small-tile revealed fg-{{ tile.suit }}"><span class="symbol">{{ tile.symbol }}</span></button>
+    <div id="board" class="bg-dark-green">
+        {% for player in game.players %}
+            <div class="player-container">
+                <div class="player-name bg-gray"><h1>{{ player.name }}<br> {{ player.score }} pts</h1></div>
+                <div class="player-tiles">
+                    <div class="player-hand bg-green">
+                        <div class="tile-group bg-transparent">
+                        {% for tile in player.hand.hidden %}
+                            <button class="tile x-small-tile flipped"></button>
                             {% endfor %}
                         </div>
-                    {% endfor %}
-                </div>
-                <div class="player-discards bg-dark-green">
-                    {% for tile in player.discards %}
-                        <button class="tile x-small-tile discarded fg-{{ tile.suit }}"><span class="symbol">{{ tile.symbol }}</span></button>
-                    {% endfor %}
+                        {% for group in player.hand.revealed %}
+                            <div class="tile-group" index="{{ loop.index0 }}">
+                                {% for tile in group %}
+                                    <button class="tile x-small-tile revealed fg-{{ tile.suit }}"><span class="symbol">{{ tile.symbol }}</span></button>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="player-discards bg-dark-green">
+                        {% for tile in player.discards %}
+                            <button class="tile x-small-tile discarded fg-{{ tile.suit }}"><span class="symbol">{{ tile.symbol }}</span></button>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
 {% endblock %}
 

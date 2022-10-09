@@ -12,9 +12,11 @@ special_symbols = {
     A: '<span class="material-icons"></span>',
 }
 
-socket.on('board_state_changed', function state_changed(data) {
-    console.log(data);
-    document.getElementById('board').innerHTML = data.html;
+socket.on('board_state_changed', function (updates) {
+    Array.from(updates).forEach((data, index) => {
+        console.log(`Updating ${data.element}`);
+        document.getElementById(data.element).outerHTML = data.html;
+    });
     makePretty();
 });
 

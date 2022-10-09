@@ -31,6 +31,7 @@ def log(message):
         'Game': 'magenta',
         'Player': 'cyan',
         'Hand': 'green',
+        'Deck': 'blue',
     }[_class]
     print(color(_class, clr), '|', message)
 

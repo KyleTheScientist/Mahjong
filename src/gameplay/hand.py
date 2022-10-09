@@ -7,12 +7,12 @@ from gameplay.deck import Tile
 
 class Hand:
     modifiers = {
-        'Winning Hand': 1,
-        'No Stealing': 2,
-        'Only One Suit': 2,
-        'Large Straight': 2,
-        'Same Group In All Suits': 2,
-        'All Triplets': 3,
+        'Winning Hand': 2,
+        'No Stealing': 1,
+        'Only One Suit': 1,
+        'Large Straight': 1,
+        'Same Group In All Suits': 1,
+        'All Triplets': 2,
         'All Natural': 5,
     }
 

@@ -24,6 +24,7 @@ body {
 .player-discards {
   padding: 4px 4px;
   display: flex;
+  flex-wrap: wrap;
 }
 
 .player-name {

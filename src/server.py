@@ -6,21 +6,17 @@ from flask_socketio import SocketIO
 from form import LoginForm
 from functools import wraps
 from flask import (
-    copy_current_request_context,
     Flask,
-    make_response,
     redirect,
     render_template,
     request,
-    Response,
     url_for,
 )
 
 app = Flask(__name__, static_folder=static(), template_folder=templates())
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
-
-game = Game(socketio)
+game = Game(app, socketio)
 ###########################################################################
 
 
@@ -50,7 +46,6 @@ def login():
         try:
             name = request.form['name']
             player = game.add_player(name)
-            update_board()
             response = redirect(url_for('waiting_for_players'))
             response.set_cookie('gameID', game.id)
             response.set_cookie('playerID', player.id)  
@@ -83,7 +78,6 @@ def register_socket(data):
     print(f'All players are registered.')
     game.deal()
     game.start_turn()
-    update_board()
 
 ### Game Management ###
 
@@ -104,8 +98,15 @@ def restart():
     print(f"{player.name} requested to restart.")
     if player.is_party_leader:
         game.restart()
-        update_board()
 
+@socketio.on('show_scoreboard')
+@validate
+def restart():
+    player = game.player(cookie('playerID'))
+    print(f"{player.name} requested to show the scoreboard.")
+    if player.is_party_leader:
+        game.set_overlay('scoreboard')
+        player.set_overlay('next-game-prompt')
 
 ### Gameplay ###
 
@@ -115,7 +116,6 @@ def discard_tile(id):
     player = game.player(cookie('playerID'))
     if game.player_can_discard(player):
         game.discard(id, player)
-        update_board()
 
 @socketio.on('steal_tile')
 @validate
@@ -124,7 +124,6 @@ def steal_tile(group):
     if game.player_can_steal(player):
         stole = game.steal(group, player)
         game.end_steal(player, stole)
-        update_board()
 
 @socketio.on('win_response')
 @validate
@@ -133,7 +132,6 @@ def accept_win(data):
     if data == "True":
         print(f"{player.name} accepted their win.")
         game.game_won()
-        update_board()
     else: 
         print(f"{player.name} did not accept their win.")
         player.set_overlay('hidden')
@@ -148,19 +146,9 @@ def player_view():
 @app.route('/game/board')
 def board():
     return render_template('board-view.html', 
-        players=game.players,
-        show_overlay=(game.winner is not None),
-        winner = game.winner
+        game=game,
     )
 
-def update_board(overlay="hidden"):
-    print('Updating board')
-    socketio.emit('board_state_changed', {
-        'html': render_template('board.html', 
-            players=game.players, 
-            show_overlay=(game.winner is not None),
-            winner = game.winner
-        )}, broadcast=True)
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=80)

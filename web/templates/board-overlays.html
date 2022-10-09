@@ -1,12 +1,41 @@
+{% set score %}
+{% if game.overlay=='winner' %}
+    <div class="prompt-details bg-dark-green">
+        <table>
+            <thead>
+                <tr>
+                    <th class="monospace">Points</th>
+                    <th class="monospace">Bonus</th>
+                </tr>
+                <tbody>
+                    {% for dict in game.winner.winning_hand.modifiers %}
+                        {% for modifier, value in dict.items() %}
+                            <tr>
+                                <td class="monospace">{{ value }}</td>
+                                <td class="monospace">{{ modifier }}</td>
+                            </tr>
+                         {% endfor %}
+                    {% endfor %}
+                    <tr>
+                        <td class="monospace bold">{{ game.winner.winning_hand.score }}</td>
+                        <td class="monospace bold">Total</td>
+                    </tr>
+                </tbody>
+            </thead>
+        </table>
+    </div>
+{% endif %}
+{% endset %}
+
 {% block overlay %}
-    {% elif overlay=='winner' %}
+    {% if game.overlay=='winner' %}
         <div id="overlay">
             <div class="centered pane">
                 <div class="prompt-header bg-dark-green">
-                    <h1>{{ player.game.winner.name }} won the round!</h1>
+                    <h1>{{ game.winner.name }} won the round!</h1>
                 </div>
                 <div class="prompt-tiles center-text">
-                    {% for group in player.game.winner.winning_hand.hand %}
+                    {% for group in game.winner.winning_hand.hand %}
                     <div class="tile-group" index="{{ loop.index0 }}">
                         {% for tile in group %}
                             <button class="tile small-tile bg-highlight fg-{{ tile.suit }}">{{ tile.symbol }}</button>
@@ -14,14 +43,44 @@
                     </div>
                     {% endfor %}
                 </div>
-                {% if player.is_party_leader %}
-                <div class="options">
-                    <button class="prompt-option fg-affirmative" onclick="restart()">Next Round</button>
-                </div>
-                {% endif %}
+                {{ score }}
             </div>
         </div>
-    {% elif overlay=='draw' %}
+    {% elif game.overlay=='scoreboard' %}
+        <div id="overlay">
+            <div class="centered pane">
+                <div class="prompt-header bg-dark-green">
+                    <h1>Scoreboard</h1>
+                </div>
+                <div class="tile-group tile-string bg-transparent" style="margin-bottom: 10px">
+                    <button class="tile small-tile">R</button>
+                    <button class="tile small-tile">O</button>
+                    <button class="tile small-tile">U</button>
+                    <button class="tile small-tile">N</button>
+                    <button class="tile small-tile">D</button>
+                    <button class="tile small-tile">{{ game.round }}</button>
+                </div>
+                <div class="prompt-details bg-dark-green">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="monospace bold">Score</th>
+                                <th class="monospace bold">Player</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for player in game.players %}
+                                <tr>
+                                    <td class="monospace">{{ player.score }}</td>
+                                    <td class="monospace">{{ player.name }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% elif game.overlay=='draw' %}
         <div id="overlay">
             <div class="centered pane">
                 <div class="prompt-header bg-dark-green">
@@ -30,14 +89,9 @@
                 <div class="prompt-header bg-dark-green">
                     <h2>The deck is empty</h2>
                 </div>
-                {% if player.is_party_leader %}
-                <div class="options">
-                    <button class="prompt-option fg-affirmative" onclick="restart()">Next Round</button>
-                </div>
-                {% endif %}
             </div>
         </div>
-    {% elif overlay == 'hidden' %}
+    {% elif game.overlay == 'hidden' %}
         <div id="overlay" style="display: none;"></div>
     {% endif %}
 {% endblock  %}

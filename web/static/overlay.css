@@ -14,46 +14,21 @@
     text-align: center;
 }
 
-.prompt-header {
-    border-radius: 10px;
-}
-
-.prompt-header h1 {
-    font-size: var(--font-size);
-}
-
-.prompt-header h2 {
-    font-size: var(--font-size-small);
+table {
+    border-collapse: collapse;
+    border-style: hidden;
+    line-height: normal;
     padding: 10px;
 }
-
-
-.prompt-tiles {
-    line-height: 1px;
-    padding: 1vw 2vh;
-    display: inline-flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
-}
   
-.prompt-details {
-    margin: auto;
-    background-color: var(--bg-gray);
-    width: fit-content;
-    border-radius: 10px;
+table td,
+table th {
     padding: 10px;
-    text-align: left;
-    font-size: 5vh;
-    margin-bottom: 1vh;
-}
-  
-
-.score-modifiers {
-    list-style: none;
+    border: 2px solid var(--fg-white);
 }
 
 .modifier {
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid var(--fg-white);
 }
 
 .monospace {

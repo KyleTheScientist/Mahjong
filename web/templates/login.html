@@ -8,10 +8,18 @@
 
 <body class="bg-dark-green">
     <div class="centered">
-        <h1>Kahjong</h1>
+        <div class="tile-group tile-string bg-transparent" style="margin-bottom: 10px">
+            <button class="tile small-tile">M</button>
+            <button class="tile small-tile">A</button>
+            <button class="tile small-tile">H</button>
+            <button class="tile small-tile">J</button>
+            <button class="tile small-tile">O</button>
+            <button class="tile small-tile">N</button>
+            <button class="tile small-tile">G</button>
+        </div>
         <div class="pane bg-green">
             <form id="login-form" actions="/login" method=post>
-                {{ form.name.label }} {{ form.name() }}
+                {{ form.name() }}
                 {{ form.submit }}
             </form>
         </div>

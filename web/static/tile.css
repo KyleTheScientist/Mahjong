@@ -1,6 +1,6 @@
 
 :root {
-    --tile-size: 15vh;
+    --tile-size: 14vh;
     --tile-font-size: 9vh!important;
     --tile-box-shadow: .2vh .2vh #c0b799, .5vh .5vh #c0b799, .8vh .8vh #c0b799, 1vh 1vh #00000055;
     
@@ -8,8 +8,8 @@
     --tile-font-size-small: 5vh!important;
     --tile-box-shadow-small: .1vh .1vh #c0b799, .3vh .3vh #c0b799, .5vh .5vh #c0b799, .6vh .6vh #00000055;
     
-    --tile-size-x-small: 3.5vh;
-    --tile-font-size-x-small: 1vh!important;
+    --tile-size-x-small: 6vh;
+    --tile-font-size-x-small: 4vh!important;
     --tile-box-shadow-x-small: .05vh .05vh #c0b799, .15vh .15vh #c0b799, .3vh .3vh #c0b799, .35vh .35vh #00000055;
 }
 
@@ -88,10 +88,16 @@
     padding: 10px;
     background-color: var(--bg-tile-group);
     align-content: center;
-    display: flex;
+    text-align: center;
+    display: inline-flex;
 }
 
-.revealed {
+.tile-string {
+    align-content: center;
+    justify-content: center;
+}
+
+.tile.revealed {
     background-color: var(--bg-tile-stolen);
     border: .1vh solid var(--tile-border-stolen);
     box-shadow: var(--tile-side-stolen);
@@ -99,7 +105,13 @@
     border-top: 2px solid var(--tile-border-stolen-light);
 }
 
-.discarded {
+.tile.flipped {
+    background-color: var(--bg-tile-flipped);
+    border-left: 2px solid var(--tile-border-flipped-light);
+    border-top: 2px solid var(--tile-border-flipped-light);
+}
+
+.tile.discarded {
     background-color: var(--bg-tile-highlighted);
 }
 

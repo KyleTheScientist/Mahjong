@@ -39,6 +39,9 @@
     padding: 20px;
     width: fit-content;
     height: min-content;
+    display: flex;
+    flex-direction: column;
+    line-height: 1px;
 }
 
 button {
@@ -74,3 +77,42 @@ button {
     flex-wrap: wrap;
     align-content: flex-start;
 }
+
+.prompt-header {
+    border-radius: 10px;
+    margin-bottom: 5px;
+    padding: 5px;
+    min-width: 40vw;
+}
+
+.prompt-header h1 {
+    font-size: var(--font-size);
+    line-height: var(--font-size);
+}
+
+.prompt-header h2 {
+    font-size: var(--font-size-small);
+    line-height: var(--font-size-small);
+    padding: 10px;
+}
+
+
+.prompt-tiles {
+    line-height: 1px;
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+  
+.prompt-details {
+    margin: auto;
+    background-color: var(--bg-gray);
+    width: fit-content;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: left;
+    font-size: var(--font-size-small);
+    margin-bottom: 1vh;
+}
+  

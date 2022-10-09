@@ -38,7 +38,7 @@
                 </div>
                 {% if player.is_party_leader %}
                 <div class="options">
-                    <button class="prompt-option fg-affirmative" onclick="restart()">Next Round</button>
+                    <button class="prompt-option fg-affirmative" onclick="scoreboard()">Scoreboard</button>
                 </div>
                 {% endif %}
             </div>
@@ -54,10 +54,24 @@
                 </div>
                 {% if player.is_party_leader %}
                 <div class="options">
-                    <button class="prompt-option fg-affirmative" onclick="restart()">Next Round</button>
+                    <button class="prompt-option fg-affirmative" onclick="scoreboard()">Scoreboard</button>
                 </div>
                 {% endif %}
             </div>
+        </div>
+    {% elif player.overlay=='next-game-prompt' %}
+        <div id="overlay">
+            {% if player.is_party_leader %}
+            <div class="centered pane">
+                <div class="options">
+                    {% if player.game.round < 3 %}
+                        <button class="prompt-option fg-affirmative" onclick="restart()">Next Round</button>
+                    {% else %}
+                        <button class="prompt-option fg-affirmative" onclick="restart()">New Game</button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
         </div>
     {% elif player.overlay=='default' %}
         <div id="overlay"></div>

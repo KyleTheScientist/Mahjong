@@ -38,6 +38,10 @@ function main() {
         });
         makePretty();
     });
+
+    socket.on('hard_reset', function () {
+        window.location.href = "/login";
+    });
 }
 
 function select(self) {
@@ -66,6 +70,10 @@ function win(decision) {
     } else {
         socket.emit('win_response', 'False')
     }
+}
+
+function scoreboard() {
+    socket.emit('show_scoreboard')
 }
 
 function restart() {

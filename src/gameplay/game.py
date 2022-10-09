@@ -1,6 +1,7 @@
 from flask import render_template
 from gameplay.player import Player
 from gameplay.deck import Deck
+from random import shuffle
 from resource import log
 from uuid import uuid4
 
@@ -27,22 +28,17 @@ class Game:
 
     HAND_SIZE = 14
 
-    def __init__(self, socketio):
+    def __init__(self, app, socketio):
+        self.app = app
         self.socketio = socketio
-        self.id = str(uuid4())
-        self.state = Game.WAITING_FOR_PLAYERS
-        self.players = []
-        self.deck = Deck()
-        self.turn = 0
-        self.winner = None
-        self.discard_pile = []
-        self.thieves = []
+        self.reset()
 
     def add_player(self, name):
         log(f"Adding player {len(self.players)}: {name}")
         player = Player(name, self)
         player.is_party_leader = len(self.players) == 0
         self.players.append(player)
+        self.update_board()
         return player
 
     def player(self, player_id):
@@ -95,6 +91,7 @@ class Game:
             player.set_overlay('default')
         else:
             self.end_turn(player)
+        self.update_board()
 
     def steal(self, group, player):
         stole = player.steal(group)
@@ -110,6 +107,7 @@ class Game:
             for i in range(Game.HAND_SIZE - 1):
                 player.deal(self.deck.draw())
             player.update()
+        self.update_board()
 
     def current_player(self):
         return self.players[self.turn]
@@ -151,31 +149,81 @@ class Game:
             return
         else:
             player.set_overlay('hidden')
+        self.update_board()
+
 
     def game_won(self):
         if self.state == Game.GAME_WON:
             return
         self.set_state(Game.GAME_WON)
         self.winner.score += self.winner.winning_hand.score
+        self.set_overlay('winner')
         for player in self.players:
             player.set_overlay('winner')
 
     def game_drawn(self):
         self.set_state(Game.GAME_WON)
+        self.overlay = 'draw'
+        self.update_board()
         for player in self.players:
             player.set_overlay('draw')
+
+    def player_reached_min_win(self):
+        for player in self.players:
+            if player.score >= 10:
+                return True
+        return False
 
     def restart(self):
         if self.state != Game.GAME_WON:
             return
+        if self.round >= 4 or self.player_reached_min_win(): 
+            self.hard_reset()
+            return
+        self.round += 1
         self.set_state(Game.DEALING)
         self.deck = Deck()
         self.discard_pile = []
         self.turn = 0
         self.winner = None
+        shuffle(self.players)
         for player in self.players:
             player.reset()
             player.update()
-        # TODO Shuffle players
+        self.set_overlay('hidden')
         self.deal()
         self.start_turn()
+
+    def reset(self):
+        self.id = str(uuid4())
+        self.state = Game.WAITING_FOR_PLAYERS
+        self.players = []
+        self.deck = Deck()
+        self.turn = 0
+        self.winner = None
+        self.discard_pile = []
+        self.thieves = []
+        self.round = 1
+        self.set_overlay('hidden')
+
+    def hard_reset(self):
+        self.reset()
+        self.socketio.emit('hard_reset', broadcast=True)
+        self.update_board()
+
+    def set_overlay(self, overlay):
+        log(f'Setting board overlay to {overlay}')
+        self.overlay = overlay
+        self.update_board()
+
+    def update_board(self):
+        log('Updating board')
+        data = []
+        with self.app.app_context():
+            for datatype in ['board', 'board-overlays']:
+                data.append({
+                    'html': render_template(f"{datatype}.html", game=self), 
+                    'element': datatype if 'overlay' not in datatype else 'overlay',
+                })
+            self.socketio.emit('board_state_changed', data, broadcast=True)
+

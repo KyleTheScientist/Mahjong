@@ -10,9 +10,9 @@
 </head>
 
 <body class="bg-gray">
-    <div id="board" class="bg-dark-green">
-        {% include 'board.html' %}
-        {% block board %}{% endblock %}
-    </div>
+    {% include 'board-overlays.html' %}
+    {% block overlay %}{% endblock %}
+    {% include 'board.html' %}
+    {% block board %}{% endblock %}
 </body>
 
