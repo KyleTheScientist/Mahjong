@@ -23,7 +23,8 @@ class Deck:
         self.tiles = tiles
         
     def shuffle(self):
-        shuffle(self.tiles)
+        pass
+        # shuffle(self.tiles)
 
     def draw(self):
         result = self.tiles[0]

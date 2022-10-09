@@ -4,13 +4,12 @@
     --tile-font-size: 9vh!important;
     --tile-box-shadow: .2vh .2vh #c0b799, .5vh .5vh #c0b799, .8vh .8vh #c0b799, 1vh 1vh #00000055;
     
-    
     --tile-size-small: 7.5vh;
     --tile-font-size-small: 5vh!important;
     --tile-box-shadow-small: .1vh .1vh #c0b799, .3vh .3vh #c0b799, .5vh .5vh #c0b799, .6vh .6vh #00000055;
     
-    --tile-size-x-small: 7.5vh;
-    --tile-font-size-x-small: 5vh!important;
+    --tile-size-x-small: 3.5vh;
+    --tile-font-size-x-small: 1vh!important;
     --tile-box-shadow-x-small: .05vh .05vh #c0b799, .15vh .15vh #c0b799, .3vh .3vh #c0b799, .35vh .35vh #00000055;
 }
 
@@ -31,45 +30,44 @@
     padding: 0 0 0 0;
     min-height: var(--tile-size);
     font-size: var(--tile-font-size);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
 
 .tile.large-tile {
     box-shadow: var(--tile-box-shadow);
     margin: 0 .8vh .8vh 0;
     min-height: var(--tile-size);
-    line-height: 1px;
 }
 
 .large-tile .material-icons {
     font-size: var(--tile-font-size);
     min-height: var(--tile-size);
-    line-height: 1px;
 }
 
 .tile.small-tile {
     box-shadow: var(--tile-box-shadow-small);
+    font-size: var(--tile-font-size-small);
     margin: 0 .5vh .5vh 0;
     min-height: var(--tile-size-small);
-    line-height: 1px;
 }
 
 .small-tile .material-icons {
     font-size: var(--tile-font-size-small);
     min-height: var(--tile-size-small);
-    line-height: 1px;
 }
 
 .tile.x-small-tile {
     box-shadow: var(--tile-box-shadow-x-small);
-    margin: 0 .3vh .3vh 0;
+    font-size: var(--tile-font-size-x-small);
+    margin: 0 .4vh .4vh 0;
     min-height: var(--tile-size-x-small);
-    line-height: 1px;
 }
 
 .x-small-tile .material-icons {
     font-size: var(--tile-font-size-x-small);
-    min-height: var(--tile-size-x-small);
-    line-height: 1px;
 }
 
 .symbol,
@@ -81,7 +79,7 @@
 }
 
 .tile-container {
-    margin: 0vh 5px 2vh 0vh;
+    margin: 2vh 5px 0vh 0vh;
 }
 
 .tile-group {
@@ -90,13 +88,21 @@
     padding: 10px;
     background-color: var(--bg-tile-group);
     align-content: center;
+    display: flex;
 }
 
-.discarded,
 .revealed {
     background-color: var(--bg-tile-stolen);
     border: .1vh solid var(--tile-border-stolen);
     box-shadow: var(--tile-side-stolen);
     border-left: 2px solid var(--tile-border-stolen-light);
     border-top: 2px solid var(--tile-border-stolen-light);
+}
+
+.discarded {
+    background-color: var(--bg-tile-highlighted);
+}
+
+.tile-container.selected {
+    margin-top: 0;
 }

@@ -5,9 +5,11 @@
     </div>
     <div class="section-content">
         {% for tile in player.hand.hidden %}
-        <div class="tile-container">
-            <button class="tile hidden large-tile fg-{{ tile.suit }} {% if tile.uuid==player.drawn_tile.uuid %}bg-highlight{% endif %}"
-                onclick="select(this)" selected="{{ tile.selected }}"
+        <div class="tile-container {% if tile.selected %} selected {% endif %}">
+            <button class="tile hidden large-tile fg-{{ tile.suit }}
+            {% if tile.uuid==player.drawn_tile.uuid %} bg-highlight {% endif %}
+            {% if tile.selected %} selected {% endif %}"
+                onclick="select(this)"
                 id="{{ tile.id }}">
                     {{ tile.symbol }}
             </button>

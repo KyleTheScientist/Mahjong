@@ -1,6 +1,31 @@
 const socket = io();
 
-import { makePretty } from './common.js';
+const special_symbols = {
+    S: '<span class="material-icons">brightness_low</span>',
+    F: '<span class="material-icons">eco</span>',
+    W: '<span class="material-icons">ac_unit</span>',
+    P: '<span class="material-icons">local_florist</span>',
+    
+    I: '<span class="material-icons">local_fire_department</span>',
+    T: '<span class="material-icons">water</span>',
+    E: '<span class="material-icons">landscape</span>',
+    A: '<span class="material-icons"></span>',
+}
+
+function makePretty() {
+    console.log("Making pretty!");
+    const tiles = document.querySelectorAll('.tile');
+    console.log(`${tiles.length} tiles`);
+
+    Array.from(tiles).forEach((tile, index) => {
+        console.log(tile.textContent.replace(/\s/g, ""));
+        for (const [key, value] of Object.entries(special_symbols)) {
+            if (tile.textContent.replace(/\s/g, "") == key) {
+                tile.innerHTML = value
+            }
+        }
+    });
+}
 
 function main() {
     socket.on('connect', function () {
@@ -16,15 +41,22 @@ function main() {
 }
 
 function select(self) {
-    if (self.getAttribute('selected') == "False") {
-        const tiles = document.querySelectorAll('.tile.hidden');
-        console.log(tiles.length);
-        Array.from(tiles).forEach((tile, index) => {
-            tile.setAttribute('selected', tile == self ? 'True' : 'False');
-        });
-    } else {
+    if (self.classList.contains("selected")) {
         console.log(`${self.getAttribute('suit')}-${self.textContent}`)
         socket.emit('discard_tile', self.getAttribute('id'))
+    } else {
+        const tiles = document.querySelectorAll('.tile.hidden');
+        Array.from(tiles).forEach((tile, index) => {
+            if (tile == self) {
+                console.log(`Adding tag to ${tile.textContent}`);
+                tile.classList.add('selected');
+                tile.parentElement.classList.add('selected');
+            } else {
+                console.log(`Removing tag from ${tile.textContent}`);
+                tile.classList.remove('selected');
+                tile.parentElement.classList.remove('selected');
+            }
+        });
     }
 }
 
