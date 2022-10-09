@@ -13,6 +13,7 @@ class Hand:
         'Large Straight': 1,
         'Same Group In All Suits': 1,
         'All Triplets': 2,
+        'All Pairs': 3,
         'All Natural': 5,
     }
 
@@ -36,9 +37,11 @@ class Hand:
         return options
 
     def score(self, winning_hand): 
-        modifiers = []
-        self.add_modifier('Winning Hand', modifiers)
         points = 1
+        modifiers = []
+        
+        value = self.add_modifier('Winning Hand', modifiers)
+        points += value
         if len(self.revealed) == 0:
             value = self.add_modifier('No Stealing', modifiers)
             points += value

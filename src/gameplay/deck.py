@@ -25,7 +25,7 @@ class Deck:
         
     def shuffle(self):
         log('Shuffing') # Honestly just a placeholder so I can comment out the next line for testing
-        shuffle(self.tiles)
+        # shuffle(self.tiles)
 
     def draw(self):
         result = self.tiles[0]

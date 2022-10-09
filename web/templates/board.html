@@ -1,6 +1,6 @@
 {% block board %}
     <div id="board" class="bg-dark-green">
-        {% for player in game.players %}
+        {% for player in game.players|sort(attribute='name') %}
             <div class="player-container">
                 <div class="player-name bg-gray"><h1>{{ player.name }}<br> {{ player.score }} pts</h1></div>
                 <div class="player-tiles">
