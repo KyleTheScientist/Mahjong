@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 
 <head>
-    {% include 'gameplay-head.html' %}
-    {% block head %}{% endblock %}
+    {% include 'head.html' %}
+    {% block common %}{% endblock %}
+    {% block networking %}{% endblock %}
     <link rel="stylesheet" href="/static/board.css">
     <link rel="stylesheet" href="/static/overlay.css">
     <script type="text/javascript" src="/static/board.js"></script>
@@ -64,6 +65,34 @@
         </div>
     </div>
     </div>
+    {% elif overlay == 'hidden' %}
+        <div id="overlay">
+            <div id="winning_hand">
+                <div class="section-header">
+                    <h1>{{ winner.name }} has won!</h1>
+                </div>
+                <div class="section-content">
+                    {% for group in winner.winning_hand.hand %}
+                    <div class="tile-group" index="{{ loop.index0 }}">
+                        {% for tile in group %}
+                        <button class="tile" highlight suit="{{ tile.suit }}">{{ tile.symbol }}</button>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="prompt-details">
+                    <h1 class="prompt-details-title">Scoring</h1>
+                    <div class="score-modifiers">
+                        {% for dict in winner.winning_hand.modifiers %}
+                            {% for modifier, value in dict.items() %}
+                                <div class="modifier"><span class="monospace margin">{{ value }}</span> | <span class="margin">{{ modifier }}</span></div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                    <span><span class="monospace bold margin">{{ winner.winning_hand.score }}</span> | <span class="margin bold">Total points</span></div>
+                </div>
+            </div>
+        </div>
     {% elif overlay == 'hidden' %}
     <div id="overlay" style="display: none;"></div>
     {% endif %}

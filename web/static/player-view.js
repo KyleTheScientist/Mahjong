@@ -1,23 +1,13 @@
 const socket = io();
 
-special_symbols = {
-    S: '<span class="material-icons">brightness_low</span>',
-    F: '<span class="material-icons">eco</span>',
-    W: '<span class="material-icons">ac_unit</span>',
-    P: '<span class="material-icons">local_florist</span>',
-    
-    I: '<span class="material-icons">local_fire_department</span>',
-    T: '<span class="material-icons">water</span>',
-    E: '<span class="material-icons">landscape</span>',
-    A: '<span class="material-icons"></span>',
-}
+import { makePretty } from './common.js';
 
 function main() {
     socket.on('connect', function () {
         socket.emit('register', {});
     });
 
-    socket.on('state_changed', function state_changed(updates) {
+    socket.on('state_changed', function (updates) {
         Array.from(updates).forEach((data, index) => {
             document.getElementById(data.element).outerHTML = data.html;
         });
@@ -27,7 +17,8 @@ function main() {
 
 function select(self) {
     if (self.getAttribute('selected') == "False") {
-        const tiles = document.querySelectorAll('.tile');
+        const tiles = document.querySelectorAll('.tile.hidden');
+        console.log(tiles.length);
         Array.from(tiles).forEach((tile, index) => {
             tile.setAttribute('selected', tile == self ? 'True' : 'False');
         });
@@ -47,7 +38,6 @@ function win(decision) {
 
 function restart() {
     socket.emit('restart')
-
 }
 
 function steal(choice) {
@@ -58,20 +48,11 @@ function steal(choice) {
     socket.emit('steal_tile', choice.parentElement.getAttribute('index'));
 }
 
+window.select = select;
+window.win = win;
+window.restart = restart;
+window.steal = steal;
 
-function makePretty() {
-    console.log("Making pretty!");
-    const tiles = document.querySelectorAll('.tile');
-    console.log(`${tiles.length} tiles`);
-
-    Array.from(tiles).forEach((tile, index) => {
-        for (const [key, value] of Object.entries(special_symbols)) {
-            if (tile.textContent == key) {
-                tile.innerHTML = value
-            }
-        }
-    });
-}
 
 $(document).ready(makePretty)
 main()

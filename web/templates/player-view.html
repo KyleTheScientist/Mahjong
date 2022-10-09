@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 
 <head>
-    {% include 'gameplay-head.html' %}
-    {% block head %}{% endblock %}
+    {% include 'head.html' %}
+    {% block common %}{% endblock %}
+    {% block networking %}{% endblock %}
     <link rel="stylesheet" href="/static/player-view.css">
     <link rel="stylesheet" href="/static/overlay.css">
-    <script type="text/javascript" src="/static/player-view.js"></script>
+    <script type="module" src="/static/player-view.js"></script>
 </head>
 
-<body>
-    <div id="orientation-warning">
-        <h1>Please rotate to landscape mode</h1>
+<body class="bg-dark-green">
+    <div id="orientation-warning" class="pane bg-green">
+        <h1 class="fg-white">Please rotate to landscape mode</h1>
     </div>
     {% include 'player-overlays.html' %}
     {% block overlay %}{% endblock %}

@@ -1,53 +1,101 @@
-.red,
-.negative {
-    color: #AA3300 !important;
+:root {
+    --fg-red: #AA3300;
+    --fg-green: #33AA00;
+    --fg-blue: #3366AA;
+    --fg-yellow: #e5bc04;
+    --fg-orange: #e56504;
+    --fg-cyan: #32cee2;
+    --fg-magenta: #c44dd1;
+    --fg-white: #FFFFFF;
+
+    --bg-green: #34a34c;
+    --bg-dark-green: #243f2a;
+    --bg-blue: #344ca3;
+    --bg-gray: #262626;
+    --bg-black: #000000;
+    
+    --bg-overlay: #1d1d1db2;
+    
+    --bg-tile: #ebe2c4;
+    --bg-tile-highlighted: #eddca3;
+    --bg-tile-stolen: #beb288;
+    --bg-tile-flipped: #2b8a5e;
+    --bg-tile-group: #00000044;
+    
+    
+    --pane-border: #000000;
+    --tile-border: #dbd2b694;
+    --tile-border-light: #f2ecd881;
+    --tile-border-stolen: #857c60;
+    --tile-border-stolen-light: #b9b5a481;
+
+
+    --sclr: #c0b799;
+    --sclr-s: #857e68;
+    --tile-side: 0.1vh 0.1vh var(--sclr), 0.3vh 0.3vh var(--sclr), 0.5vh 0.5vh var(--sclr), 0.6vh 0.6vh #00000055;
+    --tile-side-stolen: 0.1vh 0.1vh var(--sclr-s), 0.3vh 0.3vh var(--sclr-s), 0.5vh 0.5vh var(--sclr-s), 0.6vh 0.6vh #00000055;
+
+    --text-shadow: 1px 1px #0e027e1f;
 }
 
-.green,
-.affirmative {
-    color: #33AA00 !important;
+.fg-red,
+.fg-negative {
+    color: var(--fg-red);
 }
 
-.blue {
-    color: #3366AA !important;
+.fg-green,
+.fg-affirmative {
+    color: var(--fg-green);
 }
 
-.yellow {
-    color: #e5bc04 !important;
+.fg-blue {
+    color: var(--fg-blue);
 }
 
-.orange {
-    color: #e56504 !important;
+.fg-yellow {
+    color: var(--fg-yellow);
 }
 
-.cyan {
-    color: #32cee2 !important;
+.fg-orange {
+    color: var(--fg-orange);
 }
 
-.magenta {
-    color: #c44dd1 !important;
+.fg-cyan {
+    color: var(--fg-cyan);
+}
+
+.fg-magenta {
+    color: var(--fg-magenta);
 }
 
 .bg-tile {
-    background-color: #f2ecd8;
+    background-color: var(--bg-tile)
 }
 
 .bg-green {
-    background-color: #34a34c;
+    background-color: var(--bg-green);
 }
 
 .bg-dark-green {
-    background-color: #243f2a;
+    background-color: var(--bg-dark-green);
 }
 
 .bg-highlight {
-    background-color: #eddca3;
+    background-color: var(--bg-tile-highlighted)!important;
+}
+
+.bg-stolen {
+    background-color: var(--bg-tile-stolen);
+}
+
+.bg-flipped {
+    background-color: var(--bg-tile-flipped);
 }
 
 .bg-blue {
-    background-color: #344ca3;
+    background-color: var(--bg-blue);
 }
 
 .bg-gray {
-    background-color: #262626;
+    background-color: var(--bg-gray);
 }

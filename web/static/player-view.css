@@ -3,12 +3,6 @@ body {
     padding: 0;
     flex-direction: column;
     display: flex;
-    background-color: #262626;
-    font-family: 'Reem Kufi Ink';
-}
-
-button {
-    cursor: pointer;
 }
 
 #container {
@@ -27,100 +21,23 @@ button {
     font-size: 4vh;
     align-content: center;
     text-align: center;
-    background-color: #262626;
-    color: white;
-}
-
-.section {
-    flex: 1 auto;
-}
-
-h1 {
-    margin: 0;
-}
-
-.tile,
-.prompt-option {
-    aspect-ratio: 5 / 6;
-    min-height: 15vh;
-    border: .1vh solid #dbd2b694;
-    border-left: 2px solid #f2ecd881;
-    border-top: 2px solid #f2ecd881;
-    border-radius: 5px;
-    border-style: line;
-    font-weight: bold;
-    font-size: 9vh;
-    text-shadow: 3px 3px 0px #0000002c;
-    box-shadow: .1vh .1vh #c0b799, .3vh .3vh #c0b799, .5vh .5vh #c0b799, .6vh .6vh #00000055;
-    margin: 0vh 1vw 2vh 0vh;
-    text-align: center;
-    align-content: center;
-    padding: 0 0 0 0;
-}
-
-.symbol,
-.material-icons {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    vertical-align: middle;
-    line-height: 1px;
-    font-size: 9vh !important;
-}
-
-#decline-steal {
-    min-width: 15vh;
-    min-height: 15vh;
-    aspect-ratio: 0;
-    padding: 1vh;
 }
 
 .prompt-options {
     text-align: center;
 }
 
-.prompt-option {
-    aspect-ratio: 10 / 5;
-    background-color: #f2ecd8;
-    min-width: 50vh;
-}
-
 .prompt-details {
     color: white;
-    background-color: #262626;
+    background-color: #FF00FF;
     margin: 0;
     padding: 1vh;
     font-size: 9vh;
 }
 
-i.material-icons {
-    font-size: 9vh !important;
-    text-shadow: 5px 5px 0px #0000002c;
-}
-
-.revealed {
-    background-color: #b8b5ab;
-    box-shadow: .5vh .5vh #8a836f, 6px 6px #00000055;
-}
-
-#hand {
-    background-color: #34a34c;
-}
-
-#steal_options {
-    background-color: #344ca3;
-}
-
-#revealed_groups {
-    background-color: #243f2a;
-}
-
-.tile-container {
-    margin: 0vh 0vw 2vh 0vh;
-}
-
-[highlight] {
-    background-color: #eddca3;
+#decline-steal{
+    font-size: var(--tile-font-size);
+    height: var(--tile-size);
 }
 
 [selected="False"] {

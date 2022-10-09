@@ -1,14 +1,16 @@
 {% block hand %}
-<div id="hand" class="section">
+<div id="hand" class="section bg-green">
     <div class="section-header">
         <h1>Hand</h1>
     </div>
     <div class="section-content">
         {% for tile in player.hand.hidden %}
         <div class="tile-container">
-            <button class="tile" onclick="select(this)" suit="{{ tile.suit }}" selected="{{ tile.selected }}"
-                id="{{ tile.id }}" {% if tile.uuid==player.drawn_tile.uuid %}highlight{% endif %}>{{ tile.symbol
-                }}</button>
+            <button class="tile hidden large-tile fg-{{ tile.suit }} {% if tile.uuid==player.drawn_tile.uuid %}bg-highlight{% endif %}"
+                onclick="select(this)" selected="{{ tile.selected }}"
+                id="{{ tile.id }}">
+                    {{ tile.symbol }}
+            </button>
         </div>
         {% endfor %}
     </div>

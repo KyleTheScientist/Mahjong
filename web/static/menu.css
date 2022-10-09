@@ -1,0 +1,65 @@
+:root {
+    --font-size: 8vh;
+    --font-size-title: 15vh;
+
+    --font-size-portrait: 10vw;
+    --font-size-title-portrait: 15vw;
+}
+
+body {
+    background-color: #FF00FF;
+    color: white;
+    margin: 0;
+}
+
+h1 {
+    font-size: var(--font-size-title);
+    margin: 0;
+}
+
+h2 {
+    font-size: var(--font-size);
+}
+
+label {
+    font-size: var(--font-size);
+}
+
+input#name {
+    font-size: var(--font-size);
+    margin: 10px;
+    text-align: center !important;
+}
+
+
+input#submit {
+    background-color: var(--bg-tile-highlighted);
+    box-shadow: .1vh .1vh #c0b799, .3vh .3vh #c0b799, .5vh .5vh #c0b799, .6vh .6vh #00000055;
+    border: 1px solid var(--tile-border);
+    border-radius: 10px;
+    font-size: var(--font-size);
+    padding: 0px 20px 0px 20px;
+    text-shadow: var(--text-shadow);
+    cursor: pointer;
+}
+
+/* Orientation warning */
+@media only screen and (orientation:portrait) {
+    h1 {
+        font-size: var(--font-size-title-portrait);
+    }
+
+    label {
+        font-size: var(--font-size-portrait);
+    }
+
+    input#name {
+        font-size: var(--font-size-portrait);
+        max-width: 80vw;
+    }
+
+
+    input#submit {
+        font-size: var(--font-size-portrait);
+    }
+}

@@ -7,10 +7,11 @@ from flask_socketio import call
 from gameplay.hand import Hand
 
 class Player:
-    def __init__(self, name, socketio):
+    def __init__(self, name, game):
         self.name = name
         self.id = str(uuid4())
-        self.socketio = socketio
+        self.game = game
+        self.socketio = game.socketio
         self.score = 0
         self.reset()
     
@@ -18,6 +19,7 @@ class Player:
         self.hand = Hand()
         self.discards = []
         self.overlay = 'default'
+        self.winner = None
         if new_game: 
             self.score = 0
 
@@ -43,10 +45,10 @@ class Player:
             for tile in self.hand.hidden:
                 tile.selected = False
         data = []
-        for datatype in ['hand', 'steal_options', 'revealed_groups', 'overlay']:
+        for datatype in ['hand', 'steal_options', 'revealed_groups', 'player-overlays']:
             data.append({
-                'html': render_template(f"{datatype}.html", player=self, **kwargs), 
-                'element': datatype,
+                'html': render_template(f"{datatype}.html", player=self, winner=self.game.winner, **kwargs), 
+                'element': datatype if 'overlay' not in datatype else 'overlay',
             })
         self.socketio.emit("state_changed", data, to=self.sessionID)
     

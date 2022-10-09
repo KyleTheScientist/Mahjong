@@ -1,0 +1,67 @@
+{% block overlay %}
+    {% if player.overlay=='win-prompt' %}
+        <div id="overlay">
+            <div class="centered pane">
+                <div class="prompt-header bg-dark-green">
+                    <h1>You have a winning hand!</h1>
+                </div>
+                <div class="prompt-tiles center-text">
+                    {% for group in player.winning_hand.hand %}
+                    <div class="tile-group" index="{{ loop.index0 }}">
+                        {% for tile in group %}
+                            <button class="tile small-tile bg-highlight fg-{{ tile.suit }}">{{ tile.symbol }}</button>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="prompt-options">
+                    <div class="prompt-header bg-dark-green"><h1>This hand is worth {{ player.winning_hand.score }} points</h1></div>
+                    <button class="prompt-option fg-affirmative hmargin" id="accept-win" onclick="win('accept')">Mahjong!</button>
+                    <button class="prompt-option fg-negative hmargin" id="decline-win" onclick="win('decline')">Decline</button>
+                </div>
+            </div>
+        </div>
+    {% elif player.overlay=='winner' %}
+        <div id="overlay">
+            <div class="centered pane">
+                <div class="prompt-header bg-dark-green">
+                    <h1>{{ player.game.winner.name }} won the round!</h1>
+                </div>
+                <div class="prompt-tiles center-text">
+                    {% for group in player.game.winner.winning_hand.hand %}
+                    <div class="tile-group" index="{{ loop.index0 }}">
+                        {% for tile in group %}
+                            <button class="tile small-tile bg-highlight fg-{{ tile.suit }}">{{ tile.symbol }}</button>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if player.is_party_leader %}
+                <div class="options">
+                    <button class="prompt-option fg-affirmative" onclick="restart()">Next Round</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% elif player.overlay=='draw' %}
+        <div id="overlay">
+            <div class="centered pane">
+                <div class="prompt-header bg-dark-green">
+                    <h1>Draw</h1>
+                </div>
+                <div class="prompt-header bg-dark-green">
+                    <h2>The deck is empty</h2>
+                </div>
+                {% if player.is_party_leader %}
+                <div class="options">
+                    <button class="prompt-option fg-affirmative" onclick="restart()">Next Round</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% elif player.overlay=='default' %}
+        <div id="overlay"></div>
+    {% elif player.overlay=='hidden' %}
+        <div id="overlay" style="display: none"></div>
+    {% endif %}
+{% endblock %}

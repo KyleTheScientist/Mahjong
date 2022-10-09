@@ -40,7 +40,7 @@ class Game:
 
     def add_player(self, name):
         log(f"Adding player {len(self.players)}: {name}")
-        player = Player(name, self.socketio)
+        player = Player(name, self)
         player.is_party_leader = len(self.players) == 0
         self.players.append(player)
         return player
@@ -158,12 +158,12 @@ class Game:
         self.set_state(Game.GAME_WON)
         self.winner.score += self.winner.winning_hand.score
         for player in self.players:
-            player.set_overlay('winner', winner=self.winner)
+            player.set_overlay('winner')
 
     def game_drawn(self):
         self.set_state(Game.GAME_WON)
         for player in self.players:
-            player.set_overlay('draw', winner=self.winner)
+            player.set_overlay('draw')
 
     def restart(self):
         if self.state != Game.GAME_WON:
